@@ -13,7 +13,7 @@
         <activity android:name=".ProgressCircle" />
         <activity
             android:name=".Goals"
-            android:label="My goals" />
+            android:label="My goals"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

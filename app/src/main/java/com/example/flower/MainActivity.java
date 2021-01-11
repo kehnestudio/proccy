@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -21,11 +22,12 @@ public class MainActivity extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
     //DESIGN
     private Button button, button2;
-    private TextView scoreTextView;
+    private TextView scoreDailyTextView, scoreTotalTextView;
     private int scoreDaily;
     private int scoreTotal;
+    private String scoreTextDaily, scoreTextTotal;
 
-    //SHARED PREFERENCES
+    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sp = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
         scoreDaily = sp.getInt("scoreDaily", 0);
         scoreTotal = sp.getInt("scoreTotal", 0);
+
         /*
         //The input into the worker:
         Data data = new Data.Builder()
@@ -74,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
         //chillPercentage = intent.getIntExtra("EXTRA_NUMBER",0);
 
         //DEFINE TEXTVIEW
-        scoreTextView = findViewById(R.id.scoreDisplay);
-
+        scoreDailyTextView = findViewById(R.id.dailyScoreDisplay);
+        scoreTotalTextView = findViewById(R.id.totalScoreDisplay);
         //DEFINE BUTTONS
         button = findViewById(R.id.button_procrastinate);
         button2 = findViewById(R.id.button_overview);
@@ -118,21 +121,32 @@ public class MainActivity extends AppCompatActivity {
         Notification notification = new NotificationCompat.Builder(this, Channel_2_ID)
                 .setSmallIcon(R.drawable.ic_bedtime)
                 .setContentTitle("Work less, chill more")
-                .setContentText("Today's result: "+ scoreDaily +"%")
+                .setContentText(""+ scoreDaily +"%")
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();   //Baut die Notification
         //notificationManager.notify(2,notification);
 
+
+
         //Öffnet neue Activity und übergibt den score Wert mit putExtra()
         Intent intent = new Intent(this, Goals.class);
         startActivity(intent);
+
+
+
     }
 
     public void updateScore(){
-        String text;
+        scoreTextDaily = getResources().getString(R.string.textview_score_daily);
+        scoreTextTotal = getResources().getString(R.string.textview_score_total);
+
+        String dailyText, totalText;
         if (scoreDaily >= 0) {
-            text = "Score: " + scoreDaily +" % - Total Score: " + scoreTotal;
-            scoreTextView.setText(text);
+            dailyText = (scoreTextDaily + " " + scoreDaily);
+            totalText = (scoreTextTotal + " " + scoreTotal);
+            scoreDailyTextView.setText(dailyText);
+            scoreTotalTextView.setText(totalText);
         }
     }
+
 }

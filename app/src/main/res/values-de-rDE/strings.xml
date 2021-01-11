@@ -7,4 +7,6 @@
     <string name="button_overview">Übersicht</string>
     <string name="button_procrastinate">prokrastinieren</string>
     <string name="button_reset_dailyscore">zurücksetzen</string>
+    <string name="textview_score_daily">Heute:</string>
+    <string name="textview_score_total">Gesamt:</string>
 </resources>
