@@ -3,11 +3,9 @@ package com.example.flower;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +15,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.Locale;
+import java.util.Objects;
 
 public class Goals extends AppCompatActivity {
 
@@ -29,7 +28,7 @@ public class Goals extends AppCompatActivity {
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
 
     //TIMER TEXTVIEW UND BUTTONS
-    private TextView mTextViewCountDown, textView_title;
+    private TextView mTextViewCountDown, mTextViewTimer;
     private Button mButtonStartPause;
     private Button mButtonReset;
     private SeekBar seekbar_timer;
@@ -39,7 +38,7 @@ public class Goals extends AppCompatActivity {
 
     private int scoreDaily;
     private int scoreTotal;
-    private int i;
+    private int scoreTemp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,12 +58,12 @@ public class Goals extends AppCompatActivity {
         checkBox4 = findViewById(R.id.checkBox4);
 
         seekbar_timer = findViewById(R.id.seekBar_timer);
-        textView_title = findViewById(R.id.text_view_title);
+        mTextViewTimer = findViewById(R.id.text_view_title);
 
         seekbar_timer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                textView_title.setText("+"+(progress)+"Minuten");
+                mTextViewTimer.setText(progress+"minute timer");
                 START_TIME_IN_MILLIS = progress * 60000;
                 mTimeLeftInMillis = START_TIME_IN_MILLIS;
                 updateCountDownText();
@@ -82,26 +81,18 @@ public class Goals extends AppCompatActivity {
         });
 
 
-        mButtonStartPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (START_TIME_IN_MILLIS >= 3000){
-                    startTimer();
-                }
+        mButtonStartPause.setOnClickListener(v -> {
+            if (START_TIME_IN_MILLIS >= 3000){
+                startTimer();
             }
         });
 
-        mButtonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetTimer();
-            }
-        });
+        mButtonReset.setOnClickListener(v -> resetTimer());
 
         updateCountDownText();
 
         //Zurück-Pfeil zuvorheriger Aktivität
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
     private void updateCountDownText(){
@@ -117,11 +108,7 @@ public class Goals extends AppCompatActivity {
             public void onTick (long millisUntilFinished){
                 mTimeLeftInMillis = millisUntilFinished;
                 updateCountDownText();
-                checkBox1.setEnabled(false);
-                checkBox2.setEnabled(false);
-                checkBox3.setEnabled(false);
-                checkBox4.setEnabled(false);
-                seekbar_timer.setEnabled(false);
+
             }
 
             @Override
@@ -136,31 +123,37 @@ public class Goals extends AppCompatActivity {
                 scoreDaily = sp.getInt("scoreDaily", 0);
                 scoreTotal = sp.getInt("scoreTotal", 0);
 
-                i = 0;
+                scoreTemp = 0;
                 if (checkBox1.isChecked()) {
-                    i += 25;
+                    scoreTemp += 25;
                 }
                 if (checkBox2.isChecked()) {
-                    i += 25;
+                    scoreTemp += 25;
                 }
                 if (checkBox3.isChecked()) {
-                    i += 25;
+                    scoreTemp += 25;
                 }
                 if (checkBox4.isChecked()) {
-                    i += 25;
+                    scoreTemp += 25;
                 }
-                scoreDaily += i;
-                scoreTotal += i;
+                scoreDaily += scoreTemp;
+                scoreTotal += scoreTemp;
                 SharedPreferences.Editor editor =  sp.edit();
                 editor.putInt("scoreDaily", scoreDaily);
                 editor.putInt("scoreTotal", scoreTotal);
-                editor.commit();
+                editor.apply();
             }
         }.start();
 
         mTimerRunning = true;
-        //mButtonStartPause.setText("pause");
+        mButtonStartPause.setVisibility(View.INVISIBLE);
         mButtonReset.setVisibility(View.INVISIBLE);
+        mTextViewTimer.setVisibility(View.INVISIBLE);
+        checkBox1.setEnabled(false);
+        checkBox2.setEnabled(false);
+        checkBox3.setEnabled(false);
+        checkBox4.setEnabled(false);
+        seekbar_timer.setEnabled(false);
 
     }
 /* //PAUSIERT DEN TIMER
@@ -177,6 +170,7 @@ public class Goals extends AppCompatActivity {
         updateCountDownText();
         mButtonReset.setVisibility(View.INVISIBLE);
         mButtonStartPause.setVisibility(View.VISIBLE);
+        mTextViewTimer.setVisibility(View.VISIBLE);
         checkBox1.setEnabled(true);
         checkBox2.setEnabled(true);
         checkBox3.setEnabled(true);
@@ -187,10 +181,9 @@ public class Goals extends AppCompatActivity {
     //Gibt den Intent mit, wenn Zurück-Pfeil benutzt wird.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

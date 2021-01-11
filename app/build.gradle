@@ -28,6 +28,10 @@ android {
     }
 }
 
+repositories {
+    google()
+}
+
 dependencies {
     // (Java only) Work Manager
     def work_version = "2.4.0"
@@ -44,4 +48,8 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //CONSTRAINT  LAYOUT
+    implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+
 }

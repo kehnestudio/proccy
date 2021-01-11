@@ -74,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
         //chillPercentage = intent.getIntExtra("EXTRA_NUMBER",0);
 
         //DEFINE TEXTVIEW
-        scoreTextView = findViewById(R.id.textView2);
+        scoreTextView = findViewById(R.id.scoreDisplay);
 
         //DEFINE BUTTONS
-        button = findViewById(R.id.button);
-        button2 = findViewById(R.id.button2);
+        button = findViewById(R.id.button_procrastinate);
+        button2 = findViewById(R.id.button_overview);
 
         //BUTTON ON-CLICK LISTENEER
         button2.setOnClickListener(v -> openProgressOverview());
@@ -129,9 +129,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateScore(){
-
+        String text;
         if (scoreDaily >= 0) {
-            scoreTextView.setText("Score: " + scoreDaily +" % - Total Score: " + scoreTotal);
+            text = "Score: " + scoreDaily +" % - Total Score: " + scoreTotal;
+            scoreTextView.setText(text);
         }
     }
 }

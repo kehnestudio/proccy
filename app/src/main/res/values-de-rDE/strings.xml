@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Procrastinator</string>
+    <string name="textview_initial_timer">start</string>
+    <string name="button_reset_timer">zurücksetzen</string>
+    <string name="textview_timer_initial">5 Minuten Timer</string>
+    <string name="button_overview">Übersicht</string>
+    <string name="button_procrastinate">prokrastinieren</string>
+    <string name="button_reset_dailyscore">zurücksetzen</string>
+</resources>
