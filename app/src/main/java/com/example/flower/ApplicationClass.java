@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-public class ApplicationClass extends Application {
+public class  ApplicationClass extends Application {
 
     //2 NOTIFICATION CHANNEL
     public static final String Channel_1_ID = "channel_1";

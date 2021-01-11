@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Procrastinator</string>
+    <string name="textview_initial_timer">start</string>
+    <string name="button_reset_timer">reset</string>
+    <string name="textview_timer_initial">5 minute timer</string>
+    <string name="button_overview">overview</string>
+    <string name="button_procrastinate">procrastinate</string>
+    <string name="button_reset_dailyscore">reset</string>
 </resources>
