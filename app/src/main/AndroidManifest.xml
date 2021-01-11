@@ -10,6 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Flower">
+        <activity android:name=".TestActivityJulian"></activity>
         <activity android:name=".ProgressCircle" />
         <activity
             android:name=".Goals"
