@@ -119,9 +119,8 @@ public class Goals extends AppCompatActivity {
                 mButtonStartPause.setVisibility(View.INVISIBLE);
                 mButtonReset.setVisibility(View.VISIBLE);
 
-                SharedPreferences sp = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
-                scoreDaily = sp.getInt("scoreDaily", 0);
-                scoreTotal = sp.getInt("scoreTotal", 0);
+                scoreDaily = PreferencesConfig.loadDailyScore(getApplicationContext());
+                scoreTotal = PreferencesConfig.loadTotalScore(getApplicationContext());
 
                 scoreTemp = 0;
                 if (checkBox1.isChecked()) {
@@ -138,10 +137,9 @@ public class Goals extends AppCompatActivity {
                 }
                 scoreDaily += scoreTemp;
                 scoreTotal += scoreTemp;
-                SharedPreferences.Editor editor =  sp.edit();
-                editor.putInt("scoreDaily", scoreDaily);
-                editor.putInt("scoreTotal", scoreTotal);
-                editor.apply();
+
+                PreferencesConfig.saveDailyScore(getApplicationContext(), scoreDaily);
+                PreferencesConfig.saveTotalScore(getApplicationContext(), scoreTotal);
             }
         }.start();
 

@@ -23,11 +23,6 @@ public class ProgressCircle extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress_circle);
 
-        //Lädt Shared Preferences
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        //Öffnet und lädt SharedPreferences
-        scoreDaily = sp.getInt("scoreDaily", 0);
-
         progress = findViewById(R.id.progress_bar);
         text = findViewById(R.id.text_view_progress);
         reset = findViewById(R.id.resetButton);
@@ -43,20 +38,16 @@ public class ProgressCircle extends AppCompatActivity {
         }
 
     public void updateProgressBar() {
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        scoreDaily = sp.getInt("scoreDaily", 0);
+        scoreDaily = PreferencesConfig.loadDailyScore(this);
         text.setText(scoreDaily + " %");
         progress.setProgress(scoreDaily);
     }
 
     public void resetDailyScore(){
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        scoreDaily = sp.getInt("scoreDaily", 0);
         scoreDaily = 0;
-        //SharedPreferences wird geupdated
+        PreferencesConfig.saveDailyScore(this,0);
 
-        SharedPreferences.Editor editor =  sp.edit();
-        editor.putInt("scoreDaily", scoreDaily).apply();
+        //SharedPreferences wird geupdated
         updateProgressBar();
     }
 
