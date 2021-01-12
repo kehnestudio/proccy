@@ -10,8 +10,8 @@ import android.os.Build;
 public class  ApplicationClass extends Application {
 
     //2 NOTIFICATION CHANNEL
-    public static final String Channel_1_ID = "channel_1";
-    public static final String Channel_2_ID = "channel_2";
+    public static final String CHANNEL_1_ID = "channel_1";
+    public static final String CHANNEL_2_ID = "channel_2";
 
     //SHARED PREFERENCES
     public SharedPreferences sp;
@@ -30,21 +30,21 @@ public class  ApplicationClass extends Application {
         //CHECK, UM SDK VERSION ZU PRÜFEN
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel_1 = new NotificationChannel(
-                    Channel_1_ID,
+                    CHANNEL_1_ID,
                     "Channel 1",
                     NotificationManager.IMPORTANCE_HIGH
             );
             channel_1.setDescription("This is channel 1");
 
             NotificationChannel channel_2 = new NotificationChannel(
-                    Channel_2_ID,
+                    CHANNEL_2_ID,
                     "Channel 2",
                     NotificationManager.IMPORTANCE_LOW
             );
             channel_2.setDescription("This is channel 2");
 
             //ERSTELLT DIE NOTIFICATIONCHANNEL
-            NotificationManager manager = getSystemService(NotificationManager.class);
+            NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
             manager.createNotificationChannel(channel_1);
             manager.createNotificationChannel(channel_2);
         }
