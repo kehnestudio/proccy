@@ -14,6 +14,11 @@
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@drawable/custom_background_1</item>
         <item name="colorControlHighlight">@color/white</item>
+
+
+        <!--aus Video.-->
+        <item name="android:fontFamily">@font/maven_pro</item>
     </style>
+
 
 </resources>
