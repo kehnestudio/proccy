@@ -1,4 +1,4 @@
-package com.example.flower;
+package com.procrastinator.proccy;
 
 import android.app.Application;
 import android.app.NotificationChannel;
@@ -25,6 +25,7 @@ public class  ApplicationClass extends Application {
 
         //METHODE UM SHARED PREFERENCES ZU ERSTELLEN
         createSharedPreferences();
+
     }
     private void createNotificationChannel(){
         //CHECK, UM SDK VERSION ZU PRÜFEN

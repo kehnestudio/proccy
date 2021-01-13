@@ -1,35 +1,27 @@
-package com.example.flower;
+package com.procrastinator.proccy;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
-import static com.example.flower.ApplicationClass.CHANNEL_1_ID;
-import static com.example.flower.ApplicationClass.CHANNEL_2_ID;
+
+import static com.procrastinator.proccy.ApplicationClass.CHANNEL_1_ID;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
+
+    private Button firebaseUpdate;
 
     //NOTIFICATION
     private NotificationManagerCompat notificationManager;
@@ -54,7 +46,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         PreferencesConfig.saveCurrentDay(getApplicationContext(), time);
 
+        //FIREBASE BUTTON
+        firebaseUpdate = findViewById(R.id.button_FirebaseTest);
+        firebaseUpdate.setOnClickListener(v -> {
 
+            Intent intent = new Intent(this, FireBaseTest.class);
+            startActivity(intent);
+        });
 
         /*
         //The input into the worker:
@@ -90,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         //DEFINE BUTTONS
         button = findViewById(R.id.button_procrastinate);
         button2 = findViewById(R.id.button_overview);
+
+
 
         //BUTTON ON-CLICK LISTENEER
         button2.setOnClickListener(v -> openProgressOverview());
@@ -146,12 +146,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         scoreTextTotal = getResources().getString(R.string.textview_score_total);
         scoreDaily = PreferencesConfig.loadDailyScore(this);
         scoreTotal = PreferencesConfig.loadTotalScore(this);
-        String dailyText, totalText;
         if (scoreDaily >= 0) {
-            dailyText = (scoreTextDaily + " " + scoreDaily);
-            totalText = (scoreTextTotal + " " + scoreTotal);
-            scoreDailyTextView.setText(dailyText);
-            scoreTotalTextView.setText(totalText);
+            scoreDailyTextView.setText(scoreTextDaily + scoreDaily);
+            scoreTotalTextView.setText(scoreTextTotal +scoreTotal);
         }
     }
 

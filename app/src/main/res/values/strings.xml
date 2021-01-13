@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Procrastinator</string>
+    <string name="app_name" translatable="false">Procrastinator</string>
     <string name="textview_initial_timer">start</string>
     <string name="button_reset_timer">reset</string>
     <string name="textview_timer_initial">5 minute timer</string>
@@ -8,4 +8,10 @@
     <string name="button_reset_dailyscore">reset</string>
     <string name="textview_score_daily">Daily score: </string>
     <string name="textview_score_total">Total score: </string>
+    <string name="lying_down_or_sitting_in_a_comfortable_position">Lying down or sitting in a comfortable position?</string>
+    <string name="listening_to_music">Listening to music?</string>
+    <string name="is_it_quiet">Is it quiet?</string>
+    <string name="drinking_coffee_or_tea">Drinking coffee or tea?</string>
+    <string name="textview_minuten_timer">" minute timer"</string>
+    <string name="textview_start">Start</string>
 </resources>

@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Procrastinator</string>
     <string name="textview_initial_timer">start</string>
     <string name="button_reset_timer">zurücksetzen</string>
     <string name="textview_timer_initial">5 Minuten Timer</string>
     <string name="button_overview">Übersicht</string>
     <string name="button_procrastinate">prokrastinieren</string>
     <string name="button_reset_dailyscore">zurücksetzen</string>
-    <string name="textview_score_daily">Heute:</string>
-    <string name="textview_score_total">Gesamt:</string>
+    <string name="textview_score_daily">"Heute: "</string>
+    <string name="textview_score_total">"Gesamt: "</string>
+    <string name="lying_down_or_sitting_in_a_comfortable_position">Liegend oder sitzend?</string>
+    <string name="listening_to_music">Hörst du Musik?</string>
+    <string name="is_it_quiet">Ist es leise?</string>
+    <string name="drinking_coffee_or_tea">Trinkst du Kaffee/Tee?</string>
+    <string name="textview_minuten_timer">" Minuten Timer"</string>
+    <string name="textview_start">Start</string>
 </resources>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "503418752884",
+    "firebase_url": "https://proccy-9295-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "proccy-9295",
+    "storage_bucket": "proccy-9295.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503418752884:android:1b14adb002abe4037f2621",
+        "android_client_info": {
+          "package_name": "com.procrastinator.proccy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "503418752884-v30a8jrmjo3s5smbdeod1gn3qkkt8nqj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.procrastinator.proccy",
+            "certificate_hash": "b5773f33c3d69cea52594504df6f2e67f0b61a80"
+          }
+        },
+        {
+          "client_id": "503418752884-m2pivff9ujh7m9kvk90mqibcudvu77p4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBi87h4w5mN9wygbr_V_By_MQO-MBVCLoM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "503418752884-m2pivff9ujh7m9kvk90mqibcudvu77p4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

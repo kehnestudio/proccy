@@ -1,8 +1,7 @@
-package com.example.flower;
+package com.procrastinator.proccy;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,7 +10,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class ProgressCircle extends AppCompatActivity {
+public class ProgressCircle extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
 
     private int scoreDaily;
     private ProgressBar progress;
@@ -28,9 +27,7 @@ public class ProgressCircle extends AppCompatActivity {
         reset = findViewById(R.id.resetButton);
 
         //Reset button listener
-        reset.setOnClickListener(v -> {
-            resetDailyScore();
-        });
+        reset.setOnClickListener(v -> resetDailyScore());
 
         //Loading progress
         updateProgressBar();
@@ -46,18 +43,22 @@ public class ProgressCircle extends AppCompatActivity {
     public void resetDailyScore(){
         scoreDaily = 0;
         PreferencesConfig.saveDailyScore(this,0);
-
-        //SharedPreferences wird geupdated
         updateProgressBar();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(PreferencesConfig.PREF_DAILY_SCORE)) {
+            updateProgressBar();
+        }
     }
 
     //Gibt den Intent mit, wenn Zurück-Pfeil benutzt wird.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

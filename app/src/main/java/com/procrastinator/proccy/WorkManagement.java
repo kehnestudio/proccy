@@ -1,4 +1,4 @@
-package com.example.flower;
+package com.procrastinator.proccy;
 
 import android.app.Notification;
 import android.content.Context;
@@ -9,7 +9,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import static com.example.flower.ApplicationClass.CHANNEL_1_ID;
+import static com.procrastinator.proccy.ApplicationClass.CHANNEL_1_ID;
 
 public class WorkManagement extends Worker {
     private NotificationManagerCompat notificationManager;
