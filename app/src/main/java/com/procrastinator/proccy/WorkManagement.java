@@ -22,13 +22,11 @@ public class WorkManagement extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-
         displayNotification();
-
         return Result.success();
     }
 
-    private void displayNotification(){
+    private void displayNotification() {
 
         notificationManager = NotificationManagerCompat.from(getApplicationContext());
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_1_ID)
@@ -38,8 +36,6 @@ public class WorkManagement extends Worker {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();   //Baut die Notification
-        notificationManager.notify(null,1,notification);
-
+        notificationManager.notify(null, 1, notification);
     }
-
 }

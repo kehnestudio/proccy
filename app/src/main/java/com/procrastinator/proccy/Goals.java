@@ -84,7 +84,7 @@ public class Goals extends AppCompatActivity {
         seekbar_timer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mTextViewTimer.setText(progress+getString(R.string.textview_minuten_timer));
+                mTextViewTimer.setText(progress + getString(R.string.textview_minuten_timer));
                 START_TIME_IN_MILLIS = progress * 60000;
                 mTimeLeftInMillis = START_TIME_IN_MILLIS;
                 updateCountDownText();
@@ -103,7 +103,7 @@ public class Goals extends AppCompatActivity {
 
 
         mButtonStartPause.setOnClickListener(v -> {
-            if (START_TIME_IN_MILLIS >= 3000){
+            if (START_TIME_IN_MILLIS >= 3000) {
                 startTimer();
             }
         });
@@ -116,24 +116,24 @@ public class Goals extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
-    private void updateCountDownText(){
+    private void updateCountDownText() {
         int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
         int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
-        String timeLeftFormatted = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
+        String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         mTextViewCountDown.setText(timeLeftFormatted);
     }
 
     private void startTimer() {
-        mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000){
+        mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
             @Override
-            public void onTick (long millisUntilFinished){
+            public void onTick(long millisUntilFinished) {
                 mTimeLeftInMillis = millisUntilFinished;
                 updateCountDownText();
 
             }
 
             @Override
-            public void onFinish () {
+            public void onFinish() {
 
                 mTimerRunning = false;
                 mButtonStartPause.setText(getString(R.string.textview_start));
@@ -143,10 +143,10 @@ public class Goals extends AppCompatActivity {
                 scoreDaily = PreferencesConfig.loadDailyScore(getApplicationContext());
                 scoreTotal = PreferencesConfig.loadTotalScore(getApplicationContext());
 
-                Log.d("TAG", "onFinish1: "  + score1);
-                Log.d("TAG", "onFinish2: "  + score2);
-                Log.d("TAG", "onFinish3: "  + score3);
-                Log.d("TAG", "onFinish4: "  + score4);
+                Log.d("TAG", "onFinish1: " + score1);
+                Log.d("TAG", "onFinish2: " + score2);
+                Log.d("TAG", "onFinish3: " + score3);
+                Log.d("TAG", "onFinish4: " + score4);
 
                 scoreTemp = 0;
                 if (checkBox1.isChecked()) {
@@ -205,11 +205,12 @@ public class Goals extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }
 
-    public void changeCheckBox(){
+    public void changeCheckBox() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("questions");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -222,11 +223,11 @@ public class Goals extends AppCompatActivity {
 
                 //creates a new ArrayList with size of childrenCount
                 final List<Integer> l = new ArrayList<>();
-                for (int j = 0; j < max; j++ ) {
-                    l.add( j );
+                for (int j = 0; j < max; j++) {
+                    l.add(j);
                 }
                 //Shuffles the created Arraylist
-                Collections.shuffle( l );
+                Collections.shuffle(l);
 
                 //Converts the Integers in Array List to Strings
                 String count1 = Integer.toString(l.get(0));
@@ -248,10 +249,10 @@ public class Goals extends AppCompatActivity {
                     score3 = Integer.parseInt(String.valueOf(snapshot.child(count3).child("score").getValue()));
                     score4 = Integer.parseInt(String.valueOf(snapshot.child(count4).child("score").getValue()));
 
-                   checkBox1.setText(check1);
-                   checkBox2.setText(check2);
-                   checkBox3.setText(check3);
-                   checkBox4.setText(check4);
+                    checkBox1.setText(check1);
+                    checkBox2.setText(check2);
+                    checkBox3.setText(check3);
+                    checkBox4.setText(check4);
 
                 } else {
                     Log.d("TAG", "onDataChange: doesn't exist");

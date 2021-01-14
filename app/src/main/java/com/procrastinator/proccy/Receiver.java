@@ -11,7 +11,7 @@ public class Receiver extends BroadcastReceiver {
         updateDailyScore(context);
     }
 
-    public void updateDailyScore(Context context){
+    public void updateDailyScore(Context context) {
         Log.d("dailyScoreIsZero", "NULL NULL NULL");
         int dailyScoreIsZero = 0;
         PreferencesConfig.saveDailyScore(context, dailyScoreIsZero);

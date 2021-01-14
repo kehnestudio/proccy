@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class ProgressCircle extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
+public class ProgressCircle extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private int scoreDaily;
     private ProgressBar progress;
@@ -32,7 +32,7 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
         //Loading progress
         updateProgressBar();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+    }
 
     public void updateProgressBar() {
         scoreDaily = PreferencesConfig.loadDailyScore(this);
@@ -40,9 +40,9 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
         progress.setProgress(scoreDaily);
     }
 
-    public void resetDailyScore(){
+    public void resetDailyScore() {
         scoreDaily = 0;
-        PreferencesConfig.saveDailyScore(this,0);
+        PreferencesConfig.saveDailyScore(this, 0);
         updateProgressBar();
     }
 
@@ -63,6 +63,7 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
 
         return super.onOptionsItemSelected(item);
     }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }

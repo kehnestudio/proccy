@@ -25,8 +25,6 @@ import static com.google.firebase.database.FirebaseDatabase.*;
 
 public class FireBaseTest extends AppCompatActivity {
 
-    FirebaseDatabase rootNode;
-
     private CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
     private Button button;
 
@@ -51,7 +49,7 @@ public class FireBaseTest extends AppCompatActivity {
         button.setOnClickListener(v -> changeCheckBox());
     }
 
-    public void changeCheckBox(){
+    public void changeCheckBox() {
         DatabaseReference reference = getInstance().getReference("questions");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -64,11 +62,11 @@ public class FireBaseTest extends AppCompatActivity {
 
                 //creates a new ArrayList with size of childrenCount
                 final List<Integer> l = new ArrayList<>();
-                for (int j = 0; j < max; j++ ) {
-                    l.add( j );
+                for (int j = 0; j < max; j++) {
+                    l.add(j);
                 }
                 //Shuffles the created Arraylist
-                Collections.shuffle( l );
+                Collections.shuffle(l);
 
                 //Converts the Integers in Array List to Strings
                 String count1 = Integer.toString(l.get(0));

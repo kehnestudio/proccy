@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-public class  ApplicationClass extends Application {
+public class ApplicationClass extends Application {
 
     //2 NOTIFICATION CHANNEL
     public static final String CHANNEL_1_ID = "channel_1";
@@ -27,7 +27,8 @@ public class  ApplicationClass extends Application {
         createSharedPreferences();
 
     }
-    private void createNotificationChannel(){
+
+    private void createNotificationChannel() {
         //CHECK, UM SDK VERSION ZU PRÜFEN
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel_1 = new NotificationChannel(
@@ -50,7 +51,8 @@ public class  ApplicationClass extends Application {
             manager.createNotificationChannel(channel_2);
         }
     }
-    private void createSharedPreferences(){
+
+    private void createSharedPreferences() {
         sp = getSharedPreferences("UserData", Context.MODE_PRIVATE);
     }
 }
