@@ -177,7 +177,10 @@ public class Goals extends AppCompatActivity {
     //RESETTET DEN TIMER
     private void resetTimer() {
 
-        mCountDownTimer.cancel();
+        if (mTimerRunning) {
+            mCountDownTimer.cancel();
+            mTimerRunning = false;
+        }
         mTimeLeftInMillis = START_TIME_IN_MILLIS;
         mEndTime = 0;
         mTimerRunning = false;
@@ -186,6 +189,7 @@ public class Goals extends AppCompatActivity {
     }
 
     private void updateScore(){
+
         scoreDaily = PreferencesConfig.loadDailyScore(getApplicationContext());
         scoreTotal = PreferencesConfig.loadTotalScore(getApplicationContext());
 
@@ -261,59 +265,58 @@ public class Goals extends AppCompatActivity {
 
 
     public void changeCheckBox() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("questions");
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("questions");
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                // Counts number of questions (children) on firebase
-                long childrenCount = snapshot.getChildrenCount();
-                //sets max number based on children count
-                int max = (int) childrenCount;
+                    // Counts number of questions (children) on firebase
+                    long childrenCount = snapshot.getChildrenCount();
+                    //sets max number based on children count
+                    int max = (int) childrenCount;
 
-                //creates a new ArrayList with size of childrenCount
-                final List<Integer> l = new ArrayList<>();
-                for (int j = 0; j < max; j++) {
-                    l.add(j);
+                    //creates a new ArrayList with size of childrenCount
+                    final List<Integer> l = new ArrayList<>();
+                    for (int j = 0; j < max; j++) {
+                        l.add(j);
+                    }
+                    //Shuffles the created Arraylist
+                    Collections.shuffle(l);
+
+                    //Converts the Integers in Array List to Strings
+                    String count1 = Integer.toString(l.get(0));
+                    String count2 = Integer.toString(l.get(1));
+                    String count3 = Integer.toString(l.get(2));
+                    String count4 = Integer.toString(l.get(3));
+
+                    if (!mTimerRunning&&snapshot.exists()) {
+
+                        Log.d("TAG", "onDataChange exists");
+                        String check1 = snapshot.child(count1).child(language).getValue(String.class);
+                        String check2 = snapshot.child(count2).child(language).getValue(String.class);
+                        String check3 = snapshot.child(count3).child(language).getValue(String.class);
+                        String check4 = snapshot.child(count4).child(language).getValue(String.class);
+
+
+                        score1 = Integer.parseInt(String.valueOf(snapshot.child(count1).child("score").getValue()));
+                        score2 = Integer.parseInt(String.valueOf(snapshot.child(count2).child("score").getValue()));
+                        score3 = Integer.parseInt(String.valueOf(snapshot.child(count3).child("score").getValue()));
+                        score4 = Integer.parseInt(String.valueOf(snapshot.child(count4).child("score").getValue()));
+
+                        checkBox1.setText(check1);
+                        checkBox2.setText(check2);
+                        checkBox3.setText(check3);
+                        checkBox4.setText(check4);
+
+                        Log.d("TAG", "changeCheckBox: TIMER NOT RUNNING, DID UPDATE" + mTimerRunning);
+                    } else {
+
+                        Log.d("TAG", "onDataChange: doesn't exist");
+                    }
                 }
-                //Shuffles the created Arraylist
-                Collections.shuffle(l);
-
-                //Converts the Integers in Array List to Strings
-                String count1 = Integer.toString(l.get(0));
-                String count2 = Integer.toString(l.get(1));
-                String count3 = Integer.toString(l.get(2));
-                String count4 = Integer.toString(l.get(3));
-
-                if (snapshot.exists()) {
-
-                    Log.d("TAG", "onDataChange exists");
-                    String check1 = snapshot.child(count1).child(language).getValue(String.class);
-                    String check2 = snapshot.child(count2).child(language).getValue(String.class);
-                    String check3 = snapshot.child(count3).child(language).getValue(String.class);
-                    String check4 = snapshot.child(count4).child(language).getValue(String.class);
-
-
-                    score1 = Integer.parseInt(String.valueOf(snapshot.child(count1).child("score").getValue()));
-                    score2 = Integer.parseInt(String.valueOf(snapshot.child(count2).child("score").getValue()));
-                    score3 = Integer.parseInt(String.valueOf(snapshot.child(count3).child("score").getValue()));
-                    score4 = Integer.parseInt(String.valueOf(snapshot.child(count4).child("score").getValue()));
-
-                    checkBox1.setText(check1);
-                    checkBox2.setText(check2);
-                    checkBox3.setText(check3);
-                    checkBox4.setText(check4);
-
-                } else {
-                    Log.d("TAG", "onDataChange: doesn't exist");
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+            });
+        }
     }
-
-}
