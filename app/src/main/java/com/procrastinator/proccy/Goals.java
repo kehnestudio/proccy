@@ -3,6 +3,8 @@ package com.procrastinator.proccy;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -17,6 +19,8 @@ import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieDrawable;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -169,9 +173,41 @@ public class Goals extends AppCompatActivity {
                 mTimerRunning = false;
                 updateButtons();
                 updateScore();
+                playAnimation();
             }
         }.start();
         updateButtons();
+    }
+
+    private void playAnimation(){
+
+        LottieAnimationView animationView = findViewById(R.id.animationView_confetti);
+        animationView.setVisibility(View.VISIBLE);
+        animationView.setRepeatCount(0);
+        animationView.playAnimation();
+
+    animationView.addAnimatorListener(new Animator.AnimatorListener() {
+        @Override
+        public void onAnimationStart(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            animationView.setVisibility(View.INVISIBLE);
+            animationView.setProgress(0);
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+
+        }
+    });
     }
 
     //RESETTET DEN TIMER
