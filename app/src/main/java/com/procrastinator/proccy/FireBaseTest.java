@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 
@@ -19,14 +18,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
-import static com.google.firebase.database.FirebaseDatabase.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class FireBaseTest extends AppCompatActivity {
 
     private CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
     private Button button;
+    private FirebaseDatabase mDataBase;
 
     String language;
 
@@ -41,16 +40,18 @@ public class FireBaseTest extends AppCompatActivity {
         checkBox3 = findViewById(R.id.checkBox3);
         checkBox4 = findViewById(R.id.checkBox4);
         button = findViewById(R.id.buttonQuestions);
-
+        AtomicReference<String> q1 = new AtomicReference<>("HELLO");
 
         language = Locale.getDefault().getLanguage();
         Log.d("TAG", "onCreate: " + language);
 
-        button.setOnClickListener(v -> changeCheckBox());
+        button.setOnClickListener(v -> {
+            changeCheckBox();
+        });
     }
 
     public void changeCheckBox() {
-        DatabaseReference reference = getInstance().getReference("questions");
+        DatabaseReference reference = mDataBase.getInstance().getReference("questions");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -97,5 +98,4 @@ public class FireBaseTest extends AppCompatActivity {
             }
         });
     }
-
 }

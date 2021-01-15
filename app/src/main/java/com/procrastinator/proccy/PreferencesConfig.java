@@ -5,11 +5,12 @@ import android.content.SharedPreferences;
 
 public class PreferencesConfig {
 
-    private static final String MY_PREFERENCE_NAME = "com.example.flower";
+    private static final String MY_PREFERENCE_NAME = "com.example.proccy";
     public static final String PREF_DAILY_SCORE = "dailyScore";
     public static final String PREF_TOTAL_SCORE = "totalScore";
-    public static final String PREF_CURRENT_DAY = "currentDay";
-    public static final String PREF_LASTCHECKED_DAY = "lastCheckedDay";
+    public static final String PREF_TIMER_MILLIESLEFT = "millisLeft";
+    public static final String PREF_TIMER_RUNNING = "timerRunning";
+    public static final String PREF_TIMER_ENDTIME = "endTime";
 
 
     public static void saveDailyScore(Context context, int dailyScore) {
@@ -26,6 +27,20 @@ public class PreferencesConfig {
         editor.apply();
     }
 
+    public static void saveEndTime(Context context, long endTime) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putLong(PREF_TIMER_ENDTIME, endTime);
+        editor.apply();
+    }
+
+    public static void saveMilliesLeft(Context context, long milliesLeft) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putLong(PREF_TIMER_MILLIESLEFT, milliesLeft);
+        editor.apply();
+    }
+
     public static int loadDailyScore(Context context) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
         return pref.getInt(PREF_DAILY_SCORE, 0);
@@ -36,34 +51,32 @@ public class PreferencesConfig {
         return pref.getInt(PREF_TOTAL_SCORE, 0);
     }
 
-    public static void saveCurrentDay(Context context, long currentDay) {
+    public static long loadMilliesLeft(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        return pref.getLong(PREF_TIMER_MILLIESLEFT, 3000);
+    }
+
+    public static long loadEndTime(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        return pref.getLong(PREF_TIMER_ENDTIME, 0);
+    }
+
+    public static void saveTimerRunning(Context context, boolean timerRunning) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putLong(PREF_CURRENT_DAY, currentDay);
+        editor.putBoolean(PREF_TIMER_RUNNING, timerRunning);
         editor.apply();
     }
 
-    public static long loadCurrentDay(Context context) {
+    public static boolean loadTimerRunning(Context context) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
-        return pref.getLong(PREF_CURRENT_DAY, 0);
+        return pref.getBoolean(PREF_TIMER_RUNNING, false);
     }
 
-    public static void saveLastCheckedDay(Context context, long lastCheckedDay) {
+    public static void removeDailyScoreFromPref(Context context) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putLong(PREF_LASTCHECKED_DAY, lastCheckedDay);
-        editor.apply();
-    }
-
-    public static long loadLastCheckedDay(Context context) {
-        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
-        return pref.getLong(PREF_LASTCHECKED_DAY, 0);
-    }
-
-    public static void removeDataFromPref(Context context) {
-        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.remove(PREF_TOTAL_SCORE);
+        editor.remove(PREF_DAILY_SCORE);
         editor.apply();
     }
 

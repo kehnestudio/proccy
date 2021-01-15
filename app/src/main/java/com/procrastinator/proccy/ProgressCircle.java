@@ -41,8 +41,7 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
     }
 
     public void resetDailyScore() {
-        scoreDaily = 0;
-        PreferencesConfig.saveDailyScore(this, 0);
+        PreferencesConfig.removeDailyScoreFromPref(this);
         updateProgressBar();
     }
 

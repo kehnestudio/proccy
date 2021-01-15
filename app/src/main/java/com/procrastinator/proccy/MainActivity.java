@@ -28,15 +28,13 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainactivity);
-        long time = Calendar.getInstance().getTimeInMillis();
-        PreferencesConfig.saveCurrentDay(getApplicationContext(), time);
-
         //FIREBASE BUTTON - TEST
         firebaseUpdate = findViewById(R.id.button_FirebaseTest);
         firebaseUpdate.setOnClickListener(v -> {
             Intent intent = new Intent(this, FireBaseTest.class);
             startActivity(intent);
         });
+        //DELETE IF DONE
 
         scoreDailyTextView = findViewById(R.id.dailyScoreDisplay);
         scoreTotalTextView = findViewById(R.id.totalScoreDisplay);
@@ -88,9 +86,9 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void updateScore() {
         String scoreTextDaily = getResources().getString(R.string.textview_score_daily);
         String scoreTextTotal = getResources().getString(R.string.textview_score_total);
-
         int scoreDaily;
         int scoreTotal;
+
         scoreDaily = PreferencesConfig.loadDailyScore(this);
         scoreTotal = PreferencesConfig.loadTotalScore(this);
 

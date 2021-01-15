@@ -3,8 +3,10 @@ package com.procrastinator.proccy;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,9 +41,10 @@ public class Goals extends AppCompatActivity {
     private CountDownTimer mCountDownTimer;
     private boolean mTimerRunning;
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
+    private long mEndTime;
 
     //TIMER TEXTVIEW UND BUTTONS
-    private TextView mTextViewCountDown, mTextViewTimer;
+    private TextView mTextViewCountDown;
     private Button mButtonStartPause, mButtonReset;
     private SeekBar seekbar_timer;
 
@@ -75,7 +78,6 @@ public class Goals extends AppCompatActivity {
         checkBox4 = findViewById(R.id.checkBox4);
 
         seekbar_timer = findViewById(R.id.seekBar_timer);
-        mTextViewTimer = findViewById(R.id.text_view_title);
 
         language = Locale.getDefault().getLanguage();
 
@@ -84,7 +86,6 @@ public class Goals extends AppCompatActivity {
         seekbar_timer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mTextViewTimer.setText(progress + getString(R.string.textview_minuten_timer));
                 START_TIME_IN_MILLIS = progress * 60000;
                 mTimeLeftInMillis = START_TIME_IN_MILLIS;
                 updateCountDownText();
@@ -101,7 +102,6 @@ public class Goals extends AppCompatActivity {
             }
         });
 
-
         mButtonStartPause.setOnClickListener(v -> {
             if (START_TIME_IN_MILLIS >= 3000) {
                 startTimer();
@@ -110,10 +110,39 @@ public class Goals extends AppCompatActivity {
 
         mButtonReset.setOnClickListener(v -> resetTimer());
 
-        updateCountDownText();
-
         //Zurück-Pfeil zuvorheriger Aktivität
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        PreferencesConfig.saveMilliesLeft(this, mTimeLeftInMillis);
+        PreferencesConfig.saveEndTime(this, mEndTime);
+        PreferencesConfig.saveTimerRunning(this, mTimerRunning);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mTimeLeftInMillis = PreferencesConfig.loadMilliesLeft(this);
+        mTimerRunning = PreferencesConfig.loadTimerRunning(this);
+        updateCountDownText();
+        updateButtons();
+
+        if (mTimerRunning) {
+            mEndTime = PreferencesConfig.loadEndTime(this);
+            mTimeLeftInMillis = mEndTime - System.currentTimeMillis();
+
+            if(mTimeLeftInMillis < 0){
+                mTimeLeftInMillis = 0;
+                mTimerRunning = false;
+                updateCountDownText();
+                updateButtons();
+            } else {
+                startTimer();
+            }
+        }
     }
 
     private void updateCountDownText() {
@@ -124,75 +153,95 @@ public class Goals extends AppCompatActivity {
     }
 
     private void startTimer() {
+        mEndTime = System.currentTimeMillis() + mTimeLeftInMillis;
+        mTimerRunning = true;
         mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                mTimeLeftInMillis = millisUntilFinished;
-                updateCountDownText();
-
+                if(mTimerRunning){
+                    mTimeLeftInMillis = millisUntilFinished;
+                    updateCountDownText();
+                }
             }
 
             @Override
             public void onFinish() {
-
                 mTimerRunning = false;
-                mButtonStartPause.setText(getString(R.string.textview_start));
-                mButtonStartPause.setVisibility(View.INVISIBLE);
-                mButtonReset.setVisibility(View.VISIBLE);
-
-                scoreDaily = PreferencesConfig.loadDailyScore(getApplicationContext());
-                scoreTotal = PreferencesConfig.loadTotalScore(getApplicationContext());
-
-                Log.d("TAG", "onFinish1: " + score1);
-                Log.d("TAG", "onFinish2: " + score2);
-                Log.d("TAG", "onFinish3: " + score3);
-                Log.d("TAG", "onFinish4: " + score4);
-
-                scoreTemp = 0;
-                if (checkBox1.isChecked()) {
-                    scoreTemp += score1;
-                }
-                if (checkBox2.isChecked()) {
-                    scoreTemp += score2;
-                }
-                if (checkBox3.isChecked()) {
-                    scoreTemp += score3;
-                }
-                if (checkBox4.isChecked()) {
-                    scoreTemp += score4;
-                }
-                scoreDaily += scoreTemp;
-                scoreTotal += scoreTemp;
-
-                PreferencesConfig.saveDailyScore(getApplicationContext(), scoreDaily);
-                PreferencesConfig.saveTotalScore(getApplicationContext(), scoreTotal);
+                updateButtons();
+                updateScore();
             }
         }.start();
-
-        mTimerRunning = true;
-        mButtonStartPause.setVisibility(View.INVISIBLE);
-        mButtonReset.setVisibility(View.INVISIBLE);
-        mTextViewTimer.setVisibility(View.INVISIBLE);
-        checkBox1.setEnabled(false);
-        checkBox2.setEnabled(false);
-        checkBox3.setEnabled(false);
-        checkBox4.setEnabled(false);
-        seekbar_timer.setEnabled(false);
-
+        updateButtons();
     }
 
     //RESETTET DEN TIMER
     private void resetTimer() {
+
+        mCountDownTimer.cancel();
         mTimeLeftInMillis = START_TIME_IN_MILLIS;
+        mEndTime = 0;
+        mTimerRunning = false;
         updateCountDownText();
-        mButtonReset.setVisibility(View.INVISIBLE);
-        mButtonStartPause.setVisibility(View.VISIBLE);
-        mTextViewTimer.setVisibility(View.VISIBLE);
-        checkBox1.setEnabled(true);
-        checkBox2.setEnabled(true);
-        checkBox3.setEnabled(true);
-        checkBox4.setEnabled(true);
-        seekbar_timer.setEnabled(true);
+        updateButtons();
+    }
+
+    private void updateScore(){
+        scoreDaily = PreferencesConfig.loadDailyScore(getApplicationContext());
+        scoreTotal = PreferencesConfig.loadTotalScore(getApplicationContext());
+
+        Log.d("TAG", "onFinish1: " + score1);
+        Log.d("TAG", "onFinish2: " + score2);
+        Log.d("TAG", "onFinish3: " + score3);
+        Log.d("TAG", "onFinish4: " + score4);
+
+        scoreTemp = 0;
+        if (checkBox1.isChecked()) {
+            scoreTemp += score1;
+        }
+        if (checkBox2.isChecked()) {
+            scoreTemp += score2;
+        }
+        if (checkBox3.isChecked()) {
+            scoreTemp += score3;
+        }
+        if (checkBox4.isChecked()) {
+            scoreTemp += score4;
+        }
+        scoreDaily += scoreTemp;
+        scoreTotal += scoreTemp;
+
+        PreferencesConfig.saveDailyScore(getApplicationContext(), scoreDaily);
+        PreferencesConfig.saveTotalScore(getApplicationContext(), scoreTotal);
+    }
+
+    private void updateButtons() {
+        if (mTimerRunning) {
+            checkBox1.setEnabled(false);
+            checkBox2.setEnabled(false);
+            checkBox3.setEnabled(false);
+            checkBox4.setEnabled(false);
+            seekbar_timer.setVisibility(View.INVISIBLE);
+            mButtonStartPause.setVisibility(View.INVISIBLE);
+            mButtonReset.setVisibility(View.VISIBLE);
+
+        } else {
+            if (mTimeLeftInMillis < 1000) {
+                mButtonStartPause.setVisibility(View.INVISIBLE);
+            } else {
+                checkBox1.setEnabled(true);
+                checkBox2.setEnabled(true);
+                checkBox3.setEnabled(true);
+                checkBox4.setEnabled(true);
+                seekbar_timer.setVisibility(View.VISIBLE);
+                mButtonStartPause.setVisibility(View.VISIBLE);
+
+            }
+            if (mTimeLeftInMillis < START_TIME_IN_MILLIS) {
+                mButtonReset.setVisibility(View.VISIBLE);
+            } else {
+                mButtonReset.setVisibility(View.INVISIBLE);
+            }
+        }
     }
 
     //Gibt den Intent mit, wenn Zurück-Pfeil benutzt wird.
@@ -209,6 +258,7 @@ public class Goals extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
     }
+
 
     public void changeCheckBox() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("questions");
