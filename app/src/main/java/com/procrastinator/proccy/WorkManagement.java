@@ -30,7 +30,7 @@ public class WorkManagement extends Worker {
 
         notificationManager = NotificationManagerCompat.from(getApplicationContext());
         Notification notification = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_1_ID)
-                .setSmallIcon(R.drawable.ic_bedtime)
+                //.setSmallIcon(R.drawable.ic_bedtime)
                 .setContentTitle("Titel")
                 .setContentText("Beschreibung")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

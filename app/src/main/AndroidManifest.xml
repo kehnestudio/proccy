@@ -12,12 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Proccy">
-        <activity android:name=".FireBaseTest"/>
-        <activity android:name=".ProgressCircle" />
-        <activity
-            android:name=".Goals"
-            android:label="My goals" />
-        <activity android:name=".MainActivity">
+
+        <activity android:name=".SplashScreen"
+            android:theme="@style/SplashStyle"
+            android:noHistory="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +24,16 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".Receiver"
+        <activity android:name=".FireBaseTest" />
+        <activity android:name=".ProgressCircle" />
+        <activity
+            android:name=".Goals"
+            android:label="My goals" />
+        <activity android:name=".MainActivity">
+        </activity>
+
+        <receiver
+            android:name=".Receiver"
             android:permission="TODO">
             <intent-filter>
                 <action android:name="WhatEverYouWant" />
