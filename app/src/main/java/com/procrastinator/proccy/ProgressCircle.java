@@ -14,8 +14,8 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
 
     private int scoreDaily;
     private ProgressBar progress;
-    private TextView text;
-    private Button reset;
+    private TextView progressText;
+    private Button resetProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,11 +23,11 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
         setContentView(R.layout.activity_progress_circle);
 
         progress = findViewById(R.id.progress_bar);
-        text = findViewById(R.id.text_view_progress);
-        reset = findViewById(R.id.resetButton);
+        progressText = findViewById(R.id.text_view_progress);
+        resetProgress = findViewById(R.id.resetButton);
 
         //Reset button listener
-        reset.setOnClickListener(v -> resetDailyScore());
+        resetProgress.setOnClickListener(v -> resetDailyScore());
 
         //Loading progress
         updateProgressBar();
@@ -36,7 +36,7 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
 
     public void updateProgressBar() {
         scoreDaily = PreferencesConfig.loadDailyScore(this);
-        text.setText(scoreDaily + " %");
+        progressText.setText(scoreDaily + " %");
         progress.setProgress(scoreDaily);
     }
 
