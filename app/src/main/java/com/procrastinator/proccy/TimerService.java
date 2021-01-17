@@ -6,15 +6,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
-import com.google.firebase.database.FirebaseDatabase;
 
 import static com.procrastinator.proccy.ApplicationClass.CHANNEL_2_ID;
 import static com.procrastinator.proccy.Receiver.SEND_ON_FINISH;
@@ -41,7 +38,7 @@ public class TimerService extends Service {
 
         if (!mTimerRunning) {
             Intent notificationIntent = new Intent(this, Goals.class);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
@@ -49,6 +46,9 @@ public class TimerService extends Service {
                     .setContentText(getString(R.string.timer_service_front) + getTimeLeftInMinutes() + getString(R.string.timer_service_back))
                     .setSmallIcon(R.drawable.ic_sloth_svg)
                     .setContentIntent(pendingIntent)
+                    .setColor(R.drawable.custom_background_1)
+                    .setShowWhen(false)
+                    .setOnlyAlertOnce(true)
                     .build();
 
             //notificationManagerCompat.notify(2, notification.build());
@@ -58,10 +58,11 @@ public class TimerService extends Service {
         return START_NOT_STICKY;
     }
 
+
     private void updateNotification() {
 
         Intent notificationIntent = new Intent(this, Goals.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
@@ -69,7 +70,11 @@ public class TimerService extends Service {
                 .setContentText(getString(R.string.timer_service_front) + getTimeLeftInMinutes() + getString(R.string.timer_service_back))
                 .setSmallIcon(R.drawable.ic_sloth_svg)
                 .setContentIntent(pendingIntent)
+                .setOnlyAlertOnce(true)
+                .setShowWhen(false)
+                .setColor(R.drawable.custom_background_1)
                 .build();
+
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(1, notification);
@@ -117,6 +122,7 @@ public class TimerService extends Service {
                 sendUpdateButtonBroadcast();
                 sendOnFinish();
                 stopSelf();
+
                 PreferencesConfig.saveTimerHasFinished(getApplicationContext(), true);
             }
         }.start();
