@@ -14,4 +14,7 @@
     <string name="drinking_coffee_or_tea">Trinkst du Kaffee/Tee?</string>
     <string name="textview_minuten_timer">" Minuten Timer"</string>
     <string name="textview_start">Start</string>
+    <string name="timer_service_front">"Noch "</string>
+    <string name="timer_service_back">" Minuten"</string>
+    <string name="timer_service_title">Proccy-Timer</string>
 </resources>

@@ -25,10 +25,14 @@
         </activity>
 
         <activity android:name=".FireBaseTest" />
-        <activity android:name=".ProgressCircle" />
+        <activity android:name=".ProgressCircle"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".Goals"
-            android:label="My goals" />
+            android:label="My goals"
+            android:parentActivityName=".MainActivity"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"/>
         <activity android:name=".MainActivity">
         </activity>
 
@@ -39,6 +43,9 @@
                 <action android:name="WhatEverYouWant" />
             </intent-filter>
         </receiver>
+
+        <service android:name=".TimerService"/>
+
     </application>
 
 </manifest>

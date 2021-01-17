@@ -4,13 +4,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
+
+import static com.procrastinator.proccy.TimerService.TIME_LEFT_IN_MILLIS;
 
 public class Receiver extends BroadcastReceiver {
+
+    public static final String RESET_DAILY_SCORE = "com.procrastinator.proccy.RESET_DAILY_SCORE";
+    public static final String UPDATE_COUNTDOWN_TEXT = "com.procrastinator.proccy.UPDATE_COUNTDOWN_TEXT";
+    public static final String UPDATE_BUTTONS = "com.procrastinator.proccy.UPDATE_BUTTONS";
+    public static final String SEND_ON_FINISH = "com.procrastinator.proccy.SEND_ON_FINISH";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        updateDailyScore(context);
-    }
 
+        if (RESET_DAILY_SCORE.equals(intent.getAction())){
+            updateDailyScore(context);
+        }
+    }
     public void updateDailyScore(Context context) {
         Log.d("dailyScoreIsZero", "NULL NULL NULL");
         PreferencesConfig.removeDailyScoreFromPref(context);
