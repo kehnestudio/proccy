@@ -15,8 +15,6 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private Button firebaseUpdate;
-
     private Button button_procrastinate, button_overview;
     private TextView scoreDailyTextView, scoreTotalTextView;
 
@@ -28,13 +26,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainactivity);
-        //FIREBASE BUTTON - TEST
-        firebaseUpdate = findViewById(R.id.button_FirebaseTest);
-        firebaseUpdate.setOnClickListener(v -> {
-            Intent intent = new Intent(this, FireBaseTest.class);
-            startActivity(intent);
-        });
-        //DELETE IF DONE
 
         scoreDailyTextView = findViewById(R.id.dailyScoreDisplay);
         scoreTotalTextView = findViewById(R.id.totalScoreDisplay);

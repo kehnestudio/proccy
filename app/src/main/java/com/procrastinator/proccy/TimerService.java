@@ -30,15 +30,14 @@ public class TimerService extends Service {
 
     private String title, textFront, textBack;
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mTimeLeftInMillis = intent.getLongExtra("inputExtra", 3000);
         mTimerRunning = PreferencesConfig.loadTimerRunning(this);
 
-       title = getString(R.string.timer_service_title);
-       textFront = getString(R.string.timer_service_front);
-       textBack = getString(R.string.timer_service_back);
+        title = getString(R.string.timer_service_title);
+        textFront = getString(R.string.timer_service_front);
+        textBack = getString(R.string.timer_service_back);
 
         if (!mTimerRunning) {
             Intent notificationIntent = new Intent(this, Goals.class);
@@ -54,22 +53,19 @@ public class TimerService extends Service {
                     .setOnlyAlertOnce(true)
                     .build();
 
-            //notificationManagerCompat.notify(2, notification.build());
             startForeground(1, notification);
             startTimer();
         }
         return START_NOT_STICKY;
     }
 
-
     private void updateNotification() {
         int minutes = getTimeLeftInMinutes();
         String message = textFront + minutes + textBack;
 
-        if (minutes == 0){
+        if (minutes == 0) {
             message = getString(R.string.timer_service_message);
         }
-
 
         Intent notificationIntent = new Intent(this, Goals.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -84,31 +80,8 @@ public class TimerService extends Service {
                 .setShowWhen(false)
                 .build();
 
-
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(1, notification);
-    }
-
-    public int getTimeLeftInMinutes() {
-        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
-        return minutes;
-    }
-
-    public void sendUpdateBroadcast() {
-        Intent intent = new Intent(UPDATE_COUNTDOWN_TEXT);
-        intent.putExtra(TIME_LEFT_IN_MILLIS, mTimeLeftInMillis);
-        sendBroadcast(intent);
-    }
-
-    public void sendUpdateButtonBroadcast() {
-        Intent intent = new Intent(UPDATE_BUTTONS);
-        intent.putExtra(TIMER_RUNNING, mTimerRunning);
-        sendBroadcast(intent);
-    }
-
-    public void sendOnFinish() {
-        Intent intent = new Intent(SEND_ON_FINISH);
-        sendBroadcast(intent);
     }
 
     private void startTimer() {
@@ -139,6 +112,27 @@ public class TimerService extends Service {
         sendUpdateButtonBroadcast();
     }
 
+    public int getTimeLeftInMinutes() {
+        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
+        return minutes;
+    }
+
+    public void sendUpdateBroadcast() {
+        Intent intent = new Intent(UPDATE_COUNTDOWN_TEXT);
+        intent.putExtra(TIME_LEFT_IN_MILLIS, mTimeLeftInMillis);
+        sendBroadcast(intent);
+    }
+
+    public void sendUpdateButtonBroadcast() {
+        Intent intent = new Intent(UPDATE_BUTTONS);
+        intent.putExtra(TIMER_RUNNING, mTimerRunning);
+        sendBroadcast(intent);
+    }
+
+    public void sendOnFinish() {
+        Intent intent = new Intent(SEND_ON_FINISH);
+        sendBroadcast(intent);
+    }
 
     @Override
     public void onCreate() {
