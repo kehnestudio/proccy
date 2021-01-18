@@ -17,4 +17,5 @@
     <string name="timer_service_title">Proccy-Timer</string>
     <string name="timer_service_front">"Only "</string>
     <string name="timer_service_back">" minutes left"</string>
+    <string name="timer_service_message">"Less than a minute"</string>
 </resources>

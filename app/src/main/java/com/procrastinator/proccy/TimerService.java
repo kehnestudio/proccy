@@ -36,6 +36,10 @@ public class TimerService extends Service {
         mTimeLeftInMillis = intent.getLongExtra("inputExtra", 3000);
         mTimerRunning = PreferencesConfig.loadTimerRunning(this);
 
+       title = getString(R.string.timer_service_title);
+       textFront = getString(R.string.timer_service_front);
+       textBack = getString(R.string.timer_service_back);
+
         if (!mTimerRunning) {
             Intent notificationIntent = new Intent(this, Goals.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -46,7 +50,6 @@ public class TimerService extends Service {
                     .setContentText(getString(R.string.timer_service_front) + getTimeLeftInMinutes() + getString(R.string.timer_service_back))
                     .setSmallIcon(R.drawable.ic_sloth_svg)
                     .setContentIntent(pendingIntent)
-                    .setColor(R.drawable.custom_background_1)
                     .setShowWhen(false)
                     .setOnlyAlertOnce(true)
                     .build();
@@ -60,25 +63,30 @@ public class TimerService extends Service {
 
 
     private void updateNotification() {
+        int minutes = getTimeLeftInMinutes();
+        String message = textFront + minutes + textBack;
+
+        if (minutes == 0){
+            message = getString(R.string.timer_service_message);
+        }
+
 
         Intent notificationIntent = new Intent(this, Goals.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
-                .setContentTitle(getString(R.string.timer_service_title))
-                .setContentText(getString(R.string.timer_service_front) + getTimeLeftInMinutes() + getString(R.string.timer_service_back))
+                .setContentTitle(title)
+                .setContentText(message)
                 .setSmallIcon(R.drawable.ic_sloth_svg)
                 .setContentIntent(pendingIntent)
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
-                .setColor(R.drawable.custom_background_1)
                 .build();
 
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(1, notification);
-        //startForeground(1, notification);
     }
 
     public int getTimeLeftInMinutes() {
