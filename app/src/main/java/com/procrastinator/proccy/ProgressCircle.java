@@ -2,6 +2,7 @@ package com.procrastinator.proccy;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,6 +10,8 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class ProgressCircle extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -26,12 +29,26 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
         progressText = findViewById(R.id.text_view_progress);
         resetProgress = findViewById(R.id.resetButton);
 
-        //Reset button listener
-        resetProgress.setOnClickListener(v -> resetDailyScore());
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.progresscircle);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch(item.getItemId()){
+                case R.id.progresscircle:
+                    return true;
+                case R.id.main:
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    overridePendingTransition(0,0);
+                    return true;
+                case R.id.goals:
+                    startActivity(new Intent(getApplicationContext(), Goals.class));
+                    overridePendingTransition(0,0);
+                    return true;
+            }
+            return false;
+        });
 
-        //Loading progress
+        resetProgress.setOnClickListener(v -> resetDailyScore());
         updateProgressBar();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     public void updateProgressBar() {
@@ -51,20 +68,4 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
             updateProgressBar();
         }
     }
-
-    //Gibt den Intent mit, wenn Zurück-Pfeil benutzt wird.
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
 }

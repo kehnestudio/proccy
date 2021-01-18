@@ -1,5 +1,6 @@
 package com.procrastinator.proccy;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlarmManager;
@@ -8,14 +9,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private Button button_procrastinate, button_overview;
     private TextView scoreDailyTextView, scoreTotalTextView;
 
     private AlarmManager alarmMgr;
@@ -29,11 +32,24 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         scoreDailyTextView = findViewById(R.id.dailyScoreDisplay);
         scoreTotalTextView = findViewById(R.id.totalScoreDisplay);
-        button_procrastinate = findViewById(R.id.button_procrastinate);
-        button_overview = findViewById(R.id.button_overview);
 
-        button_overview.setOnClickListener(v -> openProgressOverview());
-        button_procrastinate.setOnClickListener(v -> openGoals());
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.main);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch(item.getItemId()){
+                case R.id.main:
+                    return true;
+                case R.id.goals:
+                    startActivity(new Intent(getApplicationContext(), Goals.class));
+                    overridePendingTransition(0,0);
+                    return true;
+                case R.id.progresscircle:
+                    startActivity(new Intent(getApplicationContext(), ProgressCircle.class));
+                    overridePendingTransition(0,0);
+                    return true;
+            }
+            return false;
+        });
 
         scheduleDailyScoreReset();
         updateScore();
@@ -62,16 +78,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         if (key.equals(PreferencesConfig.PREF_DAILY_SCORE)) {
             updateScore();
         }
-    }
-
-    public void openProgressOverview() {
-        Intent intent = new Intent(this, ProgressCircle.class);
-        startActivity(intent);
-    }
-
-    public void openGoals() {
-        Intent intent = new Intent(this, Goals.class);
-        startActivity(intent);
     }
 
     public void updateScore() {

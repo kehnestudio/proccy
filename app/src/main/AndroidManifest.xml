@@ -25,9 +25,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".FireBaseTest" />
-        <activity android:name=".ProgressCircle"
-            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".ProgressCircle" />
         <activity
             android:name=".Goals"
             android:label="My goals"

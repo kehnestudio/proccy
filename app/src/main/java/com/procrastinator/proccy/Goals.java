@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,7 +52,7 @@ public class Goals extends AppCompatActivity {
 
     //TIMER VARIABLEN
     //private long START_TIME_IN_MILLIS = 300000;
-    private long START_TIME_IN_MILLIS = 5000; //TEST VALUE
+    private long START_TIME_IN_MILLIS = 10000; //TEST VALUE
 
     FirebaseDatabase rootNode;
 
@@ -82,9 +83,7 @@ public class Goals extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //onCreate erstellt die Aktivität initial
         super.onCreate(savedInstanceState);
-        //setContentView setzt das layout, wie es in der XML  "activity_blume" definiert ist.
         setContentView(R.layout.activity_goals);
 
         serviceIntent = new Intent(this, TimerService.class);
@@ -100,9 +99,27 @@ public class Goals extends AppCompatActivity {
 
         seekbar_timer = findViewById(R.id.seekBar_timer);
 
-        language = Locale.getDefault().getLanguage();
-
         changeCheckBox();
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.goals);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch(item.getItemId()){
+                case R.id.goals:
+                    return true;
+                case R.id.main:
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    overridePendingTransition(0,0);
+                    return true;
+                case R.id.progresscircle:
+                    startActivity(new Intent(getApplicationContext(), ProgressCircle.class));
+                    overridePendingTransition(0,0);
+                    return true;
+            }
+            return false;
+        });
+
+        language = Locale.getDefault().getLanguage();
 
         seekbar_timer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -130,9 +147,6 @@ public class Goals extends AppCompatActivity {
         });
 
         mButtonReset.setOnClickListener(v -> resetTimer());
-
-        //Zurück-Pfeil zuvorheriger Aktivität
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
     private Receiver updateReceiver = new Receiver() {
@@ -148,7 +162,6 @@ public class Goals extends AppCompatActivity {
             } else if (SEND_ON_FINISH.equals(intent.getAction())) {
                 Log.d("TAG", "onReceive: stopping service");
                 boolean hasFinished = PreferencesConfig.loadTimerHasFinished(getApplicationContext());
-                stopService();
                 updateScore();
                 if (hasFinished){
                     playAnimation();
@@ -242,6 +255,7 @@ public class Goals extends AppCompatActivity {
         mTimerRunning = false;
         mTimeLeftInMillis = START_TIME_IN_MILLIS;
         PreferencesConfig.saveTimerRunning(this, mTimerRunning);
+        PreferencesConfig.saveTimerHasFinished(this, false);
         updateCountDownText();
         updateButtons();
         stopService();
@@ -306,22 +320,6 @@ public class Goals extends AppCompatActivity {
             }
         }
     }
-
-    //Gibt den Intent mit, wenn Zurück-Pfeil benutzt wird.
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
 
     public void changeCheckBox() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("questions");

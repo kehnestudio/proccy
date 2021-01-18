@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 
+import static android.content.ContentValues.TAG;
 import static com.procrastinator.proccy.ApplicationClass.CHANNEL_2_ID;
 import static com.procrastinator.proccy.Receiver.SEND_ON_FINISH;
 import static com.procrastinator.proccy.Receiver.UPDATE_BUTTONS;
@@ -91,7 +93,9 @@ public class TimerService extends Service {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (mTimerRunning) {
+
                     mTimeLeftInMillis = millisUntilFinished;
+                    Log.d(TAG, "onTick: " + mTimeLeftInMillis);
                     PreferencesConfig.saveMilliesLeft(getApplicationContext(), mTimeLeftInMillis);
                     updateNotification();
                     sendUpdateBroadcast();
@@ -100,11 +104,11 @@ public class TimerService extends Service {
 
             @Override
             public void onFinish() {
+                Log.d(TAG, "onFinish: Done ");
                 sendUpdateButtonBroadcast();
                 sendOnFinish();
-                stopSelf();
-
                 PreferencesConfig.saveTimerHasFinished(getApplicationContext(), true);
+                stopSelf();
             }
         }.start();
         PreferencesConfig.saveTimerRunning(getApplicationContext(), mTimerRunning);
@@ -141,7 +145,9 @@ public class TimerService extends Service {
 
     @Override
     public void onDestroy() {
-        mTimerRunning = false;
+        if (mCountDownTimer != null){
+            mCountDownTimer.cancel();
+        }
         super.onDestroy();
     }
 
