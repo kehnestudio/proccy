@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Proccy">
 
+
         <activity android:name=".SplashScreen"
             android:theme="@style/SplashStyle"
             android:noHistory="true"
@@ -24,11 +25,12 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".FireBaseTest" />
         <activity android:name=".ProgressCircle" />
         <activity
             android:name=".Goals"
-            android:label="My goals" />
+            android:label="My goals"
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop"/>
         <activity android:name=".MainActivity">
         </activity>
 
@@ -39,6 +41,9 @@
                 <action android:name="WhatEverYouWant" />
             </intent-filter>
         </receiver>
+
+        <service android:name=".TimerService"/>
+
     </application>
 
 </manifest>

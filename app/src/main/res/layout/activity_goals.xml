@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativeLayout2"
+    android:id="@+id/constraintLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Goals">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView_confetti"
@@ -65,11 +65,13 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true">
 
             <TextView
                 android:id="@+id/text_view_timer"
-                android:layout_width="wrap_content"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
                 android:text="00:00"
@@ -83,15 +85,15 @@
 
             <SeekBar
                 android:id="@+id/seekBar_timer"
-                android:layout_width="235dp"
-                android:layout_height="29dp"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
                 android:max="30"
                 android:min="5"
                 android:progress="5"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/text_view_timer"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/text_view_timer"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
@@ -99,8 +101,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
-                android:gravity="center"
-                android:padding="5dp"
                 android:text="@string/textview_initial_timer"
                 app:backgroundTint="@null"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -116,7 +116,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
-                android:padding="5dp"
                 android:text="@string/button_reset_timer"
                 android:visibility="invisible"
                 app:backgroundTint="@null"
@@ -129,11 +128,15 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
     </RelativeLayout>
 
-
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/bottom_navigation_menu"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 

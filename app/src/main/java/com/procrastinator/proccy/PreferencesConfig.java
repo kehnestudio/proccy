@@ -10,8 +10,7 @@ public class PreferencesConfig {
     public static final String PREF_TOTAL_SCORE = "totalScore";
     public static final String PREF_TIMER_MILLIESLEFT = "millisLeft";
     public static final String PREF_TIMER_RUNNING = "timerRunning";
-    public static final String PREF_TIMER_ENDTIME = "endTime";
-
+    public static final String PREF_TIMER_HAS_FINISHED = "timerFinished";
 
     public static void saveDailyScore(Context context, int dailyScore) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
@@ -27,12 +26,6 @@ public class PreferencesConfig {
         editor.apply();
     }
 
-    public static void saveEndTime(Context context, long endTime) {
-        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putLong(PREF_TIMER_ENDTIME, endTime);
-        editor.apply();
-    }
 
     public static void saveMilliesLeft(Context context, long milliesLeft) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
@@ -46,6 +39,19 @@ public class PreferencesConfig {
         return pref.getInt(PREF_DAILY_SCORE, 0);
     }
 
+    public static void saveTimerHasFinished(Context context, boolean timerFinished) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean(PREF_TIMER_HAS_FINISHED, timerFinished);
+        editor.apply();
+    }
+
+    public static boolean loadTimerHasFinished(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        return pref.getBoolean(PREF_TIMER_HAS_FINISHED, false);
+    }
+
+
     public static int loadTotalScore(Context context) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
         return pref.getInt(PREF_TOTAL_SCORE, 0);
@@ -56,10 +62,6 @@ public class PreferencesConfig {
         return pref.getLong(PREF_TIMER_MILLIESLEFT, 3000);
     }
 
-    public static long loadEndTime(Context context) {
-        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
-        return pref.getLong(PREF_TIMER_ENDTIME, 0);
-    }
 
     public static void saveTimerRunning(Context context, boolean timerRunning) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
@@ -77,6 +79,14 @@ public class PreferencesConfig {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.remove(PREF_DAILY_SCORE);
+        editor.apply();
+    }
+
+    public static void removeMILLISLEFTandTIMERRUNNING(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.remove(PREF_TIMER_RUNNING);
+        editor.remove(PREF_TIMER_MILLIESLEFT);
         editor.apply();
     }
 
