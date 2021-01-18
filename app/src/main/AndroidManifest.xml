@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Proccy">
 
+
         <activity android:name=".SplashScreen"
             android:theme="@style/SplashStyle"
             android:noHistory="true"
@@ -31,8 +32,7 @@
             android:name=".Goals"
             android:label="My goals"
             android:parentActivityName=".MainActivity"
-            android:taskAffinity=""
-            android:excludeFromRecents="true"/>
+            android:launchMode="singleTop"/>
         <activity android:name=".MainActivity">
         </activity>
 
