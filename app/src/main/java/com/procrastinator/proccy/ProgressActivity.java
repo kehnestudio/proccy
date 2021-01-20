@@ -5,15 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class ProgressCircle extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ProgressActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private int scoreDaily;
     private ProgressBar progress;
@@ -40,7 +38,7 @@ public class ProgressCircle extends AppCompatActivity implements SharedPreferenc
                     overridePendingTransition(0,0);
                     return true;
                 case R.id.goals:
-                    startActivity(new Intent(getApplicationContext(), Goals.class));
+                    startActivity(new Intent(getApplicationContext(), GoalsActivity.class));
                     overridePendingTransition(0,0);
                     return true;
             }

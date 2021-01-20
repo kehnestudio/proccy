@@ -1,34 +1,23 @@
 package com.procrastinator.proccy;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.PersistableBundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import static com.procrastinator.proccy.Receiver.SEND_ON_FINISH;
 import static com.procrastinator.proccy.Receiver.UPDATE_BUTTONS;
@@ -48,7 +36,7 @@ import static com.procrastinator.proccy.TimerService.TIMER_RUNNING;
 import static com.procrastinator.proccy.TimerService.TIME_LEFT_IN_MILLIS;
 
 
-public class Goals extends AppCompatActivity {
+public class GoalsActivity extends AppCompatActivity {
 
     //TIMER VARIABLEN
     //private long START_TIME_IN_MILLIS = 300000;
@@ -112,7 +100,7 @@ public class Goals extends AppCompatActivity {
                     overridePendingTransition(0,0);
                     return true;
                 case R.id.progresscircle:
-                    startActivity(new Intent(getApplicationContext(), ProgressCircle.class));
+                    startActivity(new Intent(getApplicationContext(), ProgressActivity.class));
                     overridePendingTransition(0,0);
                     return true;
             }

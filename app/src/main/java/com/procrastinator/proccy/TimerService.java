@@ -42,7 +42,7 @@ public class TimerService extends Service {
         textBack = getString(R.string.timer_service_back);
 
         if (!mTimerRunning) {
-            Intent notificationIntent = new Intent(this, Goals.class);
+            Intent notificationIntent = new Intent(this, GoalsActivity.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
@@ -69,7 +69,7 @@ public class TimerService extends Service {
             message = getString(R.string.timer_service_message);
         }
 
-        Intent notificationIntent = new Intent(this, Goals.class);
+        Intent notificationIntent = new Intent(this, GoalsActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
