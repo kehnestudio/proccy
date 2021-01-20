@@ -1,28 +1,36 @@
-package com.procrastinator.proccy;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+package com.procrastinator.proccy.Fragments;
 
 import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.procrastinator.proccy.PreferencesConfig;
+import com.procrastinator.proccy.R;
+import com.procrastinator.proccy.Receiver;
+import com.procrastinator.proccy.TimerService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,79 +43,76 @@ import static com.procrastinator.proccy.Receiver.UPDATE_COUNTDOWN_TEXT;
 import static com.procrastinator.proccy.TimerService.TIMER_RUNNING;
 import static com.procrastinator.proccy.TimerService.TIME_LEFT_IN_MILLIS;
 
+public class Goals extends Fragment{
 
-public class GoalsActivity extends AppCompatActivity {
-
+    private static final String ARG_PARAM1 = "ARG_PARAM1";
+    private static final String ARG_PARAM2 = "ARG_PARAM2";
     //TIMER VARIABLEN
     //private long START_TIME_IN_MILLIS = 300000;
     private long START_TIME_IN_MILLIS = 10000; //TEST VALUE
-
-    FirebaseDatabase rootNode;
-
     private CountDownTimer mCountDownTimer;
     private boolean mTimerRunning;
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
-    private long mEndTime;
-
     //TIMER TEXTVIEW UND BUTTONS
     private TextView mTextViewCountDown;
     private Button mButtonStartPause, mButtonReset;
     private SeekBar seekbar_timer;
-
     private CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
-    private String language;
-
     private int scoreDaily;
     private int scoreTotal;
     private int scoreTemp;
-
     int score1 = 5;
     int score2 = 5;
     int score3 = 5;
     int score4 = 5;
+    public Intent serviceIntent;
 
-    Intent serviceIntent;
+    public Goals() {
+        // Required empty public constructor
+    }
+
+    public static Goals newInstance(String param1, String param2) {
+        Goals fragment = new Goals();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+    
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_goals, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_goals);
+        serviceIntent = new Intent(requireActivity(), TimerService.class);
 
-        serviceIntent = new Intent(this, TimerService.class);
+        mTextViewCountDown = getView().findViewById(R.id.text_view_timer);
+        mButtonStartPause = getView().findViewById(R.id.button_start);
+        mButtonReset = getView().findViewById(R.id.button_reset);
 
-        mTextViewCountDown = findViewById(R.id.text_view_timer);
-        mButtonStartPause = findViewById(R.id.button_start);
-        mButtonReset = findViewById(R.id.button_reset);
+        checkBox1 = getView().findViewById(R.id.checkBox);
+        checkBox2 = getView().findViewById(R.id.checkBox2);
+        checkBox3 = getView().findViewById(R.id.checkBox3);
+        checkBox4 = getView().findViewById(R.id.checkBox4);
 
-        checkBox1 = findViewById(R.id.checkBox);
-        checkBox2 = findViewById(R.id.checkBox2);
-        checkBox3 = findViewById(R.id.checkBox3);
-        checkBox4 = findViewById(R.id.checkBox4);
-
-        seekbar_timer = findViewById(R.id.seekBar_timer);
+        seekbar_timer = getView().findViewById(R.id.seekBar_timer);
 
         changeCheckBox();
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.goals);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch(item.getItemId()){
-                case R.id.goals:
-                    return true;
-                case R.id.main:
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    overridePendingTransition(0,0);
-                    return true;
-                case R.id.progresscircle:
-                    startActivity(new Intent(getApplicationContext(), ProgressActivity.class));
-                    overridePendingTransition(0,0);
-                    return true;
+        mButtonStartPause.setOnClickListener(v -> {
+            if (START_TIME_IN_MILLIS >= 3000) {
+                startService();
             }
-            return false;
         });
 
-        language = Locale.getDefault().getLanguage();
+        mButtonReset.setOnClickListener(v -> resetTimer());
 
         seekbar_timer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -128,13 +133,6 @@ public class GoalsActivity extends AppCompatActivity {
             }
         });
 
-        mButtonStartPause.setOnClickListener(v -> {
-            if (START_TIME_IN_MILLIS >= 3000) {
-                startService();
-            }
-        });
-
-        mButtonReset.setOnClickListener(v -> resetTimer());
     }
 
     private Receiver updateReceiver = new Receiver() {
@@ -149,39 +147,39 @@ public class GoalsActivity extends AppCompatActivity {
                 mTimerRunning = intent.getBooleanExtra(TIMER_RUNNING, false);
             } else if (SEND_ON_FINISH.equals(intent.getAction())) {
                 Log.d("TAG", "onReceive: stopping service");
-                boolean hasFinished = PreferencesConfig.loadTimerHasFinished(getApplicationContext());
+                boolean hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
                 updateScore();
                 if (hasFinished){
                     playAnimation();
-                    PreferencesConfig.saveTimerHasFinished(getApplicationContext(), false);
+                    PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
                 }
             }
         }
     };
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(updateReceiver);
-        PreferencesConfig.saveTimerRunning(this, mTimerRunning);
-        PreferencesConfig.saveMilliesLeft(this, mTimeLeftInMillis);
+    public void onPause() {
+        super.onPause();
+        requireActivity().unregisterReceiver(updateReceiver);
+        PreferencesConfig.saveTimerRunning(requireActivity(), mTimerRunning);
+        PreferencesConfig.saveMilliesLeft(requireActivity(), mTimeLeftInMillis);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(UPDATE_BUTTONS); // Action1 to filter
         intentFilter.addAction(UPDATE_COUNTDOWN_TEXT);
         intentFilter.addAction(SEND_ON_FINISH);// Action2 to filter
-        registerReceiver(updateReceiver, intentFilter);
-        mTimerRunning = PreferencesConfig.loadTimerRunning(this);
-        mTimeLeftInMillis = PreferencesConfig.loadMilliesLeft(this);
-        boolean hasFinished = PreferencesConfig.loadTimerHasFinished(this);
+        requireActivity().registerReceiver(updateReceiver, intentFilter);
+        mTimerRunning = PreferencesConfig.loadTimerRunning(requireActivity());
+        mTimeLeftInMillis = PreferencesConfig.loadMilliesLeft(requireActivity());
+        boolean hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
         if (hasFinished){
             playAnimation();
-            PreferencesConfig.saveTimerHasFinished(this, false);
+            PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
         }
         if(mTimerRunning){
             startService();
@@ -193,7 +191,7 @@ public class GoalsActivity extends AppCompatActivity {
         if (mTimeLeftInMillis < 0) {
             mTimeLeftInMillis = 0;
             mTimerRunning = false;
-            PreferencesConfig.saveTimerRunning(this, false);
+            PreferencesConfig.saveTimerRunning(requireActivity(), false);
             updateCountDownText();
             updateButtons();
         }
@@ -209,7 +207,7 @@ public class GoalsActivity extends AppCompatActivity {
 
     private void playAnimation() {
 
-        LottieAnimationView animationView = findViewById(R.id.animationView_confetti);
+        LottieAnimationView animationView = getView().findViewById(R.id.animationView_confetti);
         animationView.setVisibility(View.VISIBLE);
         animationView.setRepeatCount(0);
         animationView.playAnimation();
@@ -242,8 +240,8 @@ public class GoalsActivity extends AppCompatActivity {
     private void resetTimer() {
         mTimerRunning = false;
         mTimeLeftInMillis = START_TIME_IN_MILLIS;
-        PreferencesConfig.saveTimerRunning(this, mTimerRunning);
-        PreferencesConfig.saveTimerHasFinished(this, false);
+        PreferencesConfig.saveTimerRunning(requireActivity(), mTimerRunning);
+        PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
         updateCountDownText();
         updateButtons();
         stopService();
@@ -251,8 +249,8 @@ public class GoalsActivity extends AppCompatActivity {
 
     private void updateScore() {
 
-        scoreDaily = PreferencesConfig.loadDailyScore(getApplicationContext());
-        scoreTotal = PreferencesConfig.loadTotalScore(getApplicationContext());
+        scoreDaily = PreferencesConfig.loadDailyScore(requireActivity());
+        scoreTotal = PreferencesConfig.loadTotalScore(requireActivity());
 
         Log.d("TAG", "onFinish1: " + score1);
         Log.d("TAG", "onFinish2: " + score2);
@@ -275,8 +273,8 @@ public class GoalsActivity extends AppCompatActivity {
         scoreDaily += scoreTemp;
         scoreTotal += scoreTemp;
 
-        PreferencesConfig.saveDailyScore(getApplicationContext(), scoreDaily);
-        PreferencesConfig.saveTotalScore(getApplicationContext(), scoreTotal);
+        PreferencesConfig.saveDailyScore(requireActivity(), scoreDaily);
+        PreferencesConfig.saveTotalScore(requireActivity(), scoreTotal);
     }
 
     private void updateButtons() {
@@ -311,11 +309,12 @@ public class GoalsActivity extends AppCompatActivity {
 
     public void changeCheckBox() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("questions");
-        mTimerRunning = PreferencesConfig.loadTimerRunning(this);
+        mTimerRunning = PreferencesConfig.loadTimerRunning(requireActivity());
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                String languageCode = Locale.getDefault().getLanguage();
                 // Counts number of questions (children) on firebase
                 long childrenCount = snapshot.getChildrenCount();
                 //sets max number based on children count
@@ -338,10 +337,10 @@ public class GoalsActivity extends AppCompatActivity {
                 if (!mTimerRunning && snapshot.exists()) {
 
                     Log.d("TAG", "onDataChange exists");
-                    String check1 = snapshot.child(count1).child(language).getValue(String.class);
-                    String check2 = snapshot.child(count2).child(language).getValue(String.class);
-                    String check3 = snapshot.child(count3).child(language).getValue(String.class);
-                    String check4 = snapshot.child(count4).child(language).getValue(String.class);
+                    String check1 = snapshot.child(count1).child(languageCode).getValue(String.class);
+                    String check2 = snapshot.child(count2).child(languageCode).getValue(String.class);
+                    String check3 = snapshot.child(count3).child(languageCode).getValue(String.class);
+                    String check4 = snapshot.child(count4).child(languageCode).getValue(String.class);
 
 
                     score1 = Integer.parseInt(String.valueOf(snapshot.child(count1).child("score").getValue()));
@@ -368,13 +367,14 @@ public class GoalsActivity extends AppCompatActivity {
     }
 
     public void startService() {
-        Intent serviceIntent = new Intent(this, TimerService.class);
+        Intent serviceIntent = new Intent(requireActivity(), TimerService.class);
         serviceIntent.putExtra("inputExtra", mTimeLeftInMillis);
-        startService(serviceIntent);
+        requireActivity().startService(serviceIntent);
     }
 
     public void stopService() {
-        stopService(serviceIntent);
+        requireActivity().stopService(new Intent(getActivity(),TimerService.class));
     }
+
 
 }

@@ -34,11 +34,17 @@ repositories {
 
 dependencies {
 
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    def nav_version = "2.3.2"
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
+
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.google.firebase:firebase-analytics:18.0.0'
+    implementation 'com.google.firebase:firebase-analytics:18.0.1'
     implementation 'com.google.firebase:firebase-database:19.6.0'
-    implementation 'com.google.firebase:firebase-auth:20.0.1'
-    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.firebase:firebase-auth:20.0.2'
+    implementation 'com.google.firebase:firebase-core:18.0.1'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     // (Java only) Work Manager

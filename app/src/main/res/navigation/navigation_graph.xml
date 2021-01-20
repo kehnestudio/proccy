@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/fragment_home">
+
+    <fragment
+        android:id="@+id/fragment_home"
+        android:name="com.procrastinator.proccy.Fragments.Home"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_fragment_home_to_fragment_goals"
+            app:destination="@id/fragment_goals" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_progress"
+        android:name="com.procrastinator.proccy.Fragments.Progress"
+        android:label="fragment_progress"
+        tools:layout="@layout/fragment_progress" />
+    <fragment
+        android:id="@+id/fragment_goals"
+        android:name="com.procrastinator.proccy.Fragments.Goals"
+        android:label="fragment_goals"
+        tools:layout="@layout/fragment_goals" >
+        <action
+            android:id="@+id/action_fragment_goals_to_fragment_progress"
+            app:destination="@id/fragment_progress" />
+    </fragment>
+</navigation>

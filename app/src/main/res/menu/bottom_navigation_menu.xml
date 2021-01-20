@@ -1,16 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/main"
+        android:id="@+id/fragment_home"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_home_24"
         android:title="Main"/>
     <item
-        android:id="@+id/goals"
+        android:id="@+id/fragment_goals"
         android:enabled="true"
         android:icon="@drawable/ic_sloth_svg"
         android:title="Proccy"/>
     <item
-        android:id="@+id/progresscircle"
+        android:id="@+id/fragment_progress"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_timeline_24"
         android:title="Overview"/>

@@ -33,7 +33,7 @@ public class SignInActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignClient;
     private String TAG = "MainActivity";
     private FirebaseAuth mAuth;
-    private Button btnSignOut;
+    private Button btnSignOut, btnContinueLocally;
     private int RC_SIGN_IN = 1;
 
     @Override
@@ -43,9 +43,18 @@ public class SignInActivity extends AppCompatActivity {
 
         btnSignIn = findViewById(R.id.sign_in_button);
         btnSignOut = findViewById(R.id.sign_out_button);
+        btnContinueLocally = findViewById(R.id.continue_locally_button);
 
         mAuth = FirebaseAuth.getInstance();
         createLoginRequest();
+
+        btnContinueLocally.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent1);
+            }
+        });
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +146,6 @@ public class SignInActivity extends AppCompatActivity {
             String personEmail = account.getEmail();
             String personID = account.getId();
             Uri personPhoto = account.getPhotoUrl();
-
             Toast.makeText(SignInActivity.this, personName + "  "+ personEmail + " " + personID, Toast.LENGTH_SHORT).show();
         }
     }
