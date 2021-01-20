@@ -2,16 +2,16 @@
     <item
         android:id="@+id/main"
         android:enabled="true"
-        android:icon="@drawable/ic_sloth_svg"
+        android:icon="@drawable/ic_baseline_home_24"
         android:title="Main"/>
     <item
         android:id="@+id/goals"
         android:enabled="true"
         android:icon="@drawable/ic_sloth_svg"
-        android:title="Goals"/>
+        android:title="Proccy"/>
     <item
         android:id="@+id/progresscircle"
         android:enabled="true"
-        android:icon="@drawable/ic_sloth_svg"
+        android:icon="@drawable/ic_baseline_timeline_24"
         android:title="Overview"/>
 </menu>

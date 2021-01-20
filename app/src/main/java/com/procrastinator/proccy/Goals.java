@@ -271,7 +271,7 @@ public class Goals extends AppCompatActivity {
         Log.d("TAG", "onFinish3: " + score3);
         Log.d("TAG", "onFinish4: " + score4);
 
-        scoreTemp = 0;
+        scoreTemp = 10;
         if (checkBox1.isChecked()) {
             scoreTemp += score1;
         }
