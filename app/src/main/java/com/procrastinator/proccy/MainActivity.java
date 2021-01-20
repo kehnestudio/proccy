@@ -1,28 +1,55 @@
 package com.procrastinator.proccy;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import android.app.AlarmManager;
+import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.procrastinator.proccy.Fragments.Goals;
+import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private TextView scoreDailyTextView, scoreTotalTextView;
+public class MainActivity extends AppCompatActivity {
 
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
+
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,69 +57,27 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainactivity);
 
-        scoreDailyTextView = findViewById(R.id.dailyScoreDisplay);
-        scoreTotalTextView = findViewById(R.id.totalScoreDisplay);
-
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.main);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch(item.getItemId()){
-                case R.id.main:
-                    return true;
-                case R.id.goals:
-                    startActivity(new Intent(getApplicationContext(), Goals.class));
-                    overridePendingTransition(0,0);
-                    return true;
-                case R.id.progresscircle:
-                    startActivity(new Intent(getApplicationContext(), ProgressCircle.class));
-                    overridePendingTransition(0,0);
-                    return true;
-            }
-            return false;
-        });
-
+        onNewIntent(getIntent());
         scheduleDailyScoreReset();
-        updateScore();
+        setUpNavigation();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateScore();
+    public void setUpNavigation(){
+        bottomNavigationView =findViewById(R.id.bottom_navigation);
+        NavHostFragment navHostFragment = (NavHostFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment_container);
+        NavigationUI.setupWithNavController(bottomNavigationView,
+                navHostFragment.getNavController());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        PreferencesConfig.registerPref(this, this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        PreferencesConfig.unregisterPref(this, this);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(PreferencesConfig.PREF_DAILY_SCORE)) {
-            updateScore();
-        }
-    }
-
-    public void updateScore() {
-        String scoreTextDaily = getResources().getString(R.string.textview_score_daily);
-        String scoreTextTotal = getResources().getString(R.string.textview_score_total);
-        int scoreDaily;
-        int scoreTotal;
-
-        scoreDaily = PreferencesConfig.loadDailyScore(this);
-        scoreTotal = PreferencesConfig.loadTotalScore(this);
-
-        if (scoreDaily >= 0) {
-            scoreDailyTextView.setText(scoreTextDaily + scoreDaily);
-            scoreTotalTextView.setText(scoreTextTotal + scoreTotal);
-        }
     }
 
     public void scheduleDailyScoreReset() {

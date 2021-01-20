@@ -42,7 +42,7 @@ public class TimerService extends Service {
         textBack = getString(R.string.timer_service_back);
 
         if (!mTimerRunning) {
-            Intent notificationIntent = new Intent(this, Goals.class);
+            Intent notificationIntent = new Intent(this, MainActivity.class);
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
@@ -69,7 +69,7 @@ public class TimerService extends Service {
             message = getString(R.string.timer_service_message);
         }
 
-        Intent notificationIntent = new Intent(this, Goals.class);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
@@ -95,7 +95,6 @@ public class TimerService extends Service {
                 if (mTimerRunning) {
 
                     mTimeLeftInMillis = millisUntilFinished;
-                    Log.d(TAG, "onTick: " + mTimeLeftInMillis);
                     PreferencesConfig.saveMilliesLeft(getApplicationContext(), mTimeLeftInMillis);
                     updateNotification();
                     sendUpdateBroadcast();
@@ -104,7 +103,7 @@ public class TimerService extends Service {
 
             @Override
             public void onFinish() {
-                Log.d(TAG, "onFinish: Done ");
+                Log.d(TAG, "onFinish: Timer is Done ");
                 sendUpdateButtonBroadcast();
                 sendOnFinish();
                 PreferencesConfig.saveTimerHasFinished(getApplicationContext(), true);
