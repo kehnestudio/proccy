@@ -25,6 +25,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 public class SignInActivity extends AppCompatActivity {
@@ -33,8 +35,8 @@ public class SignInActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignClient;
     private String TAG = "MainActivity";
     private FirebaseAuth mAuth;
-    private Button btnSignOut, btnContinueLocally;
     private int RC_SIGN_IN = 1;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,19 +44,9 @@ public class SignInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_in);
 
         btnSignIn = findViewById(R.id.sign_in_button);
-        btnSignOut = findViewById(R.id.sign_out_button);
-        btnContinueLocally = findViewById(R.id.continue_locally_button);
 
         mAuth = FirebaseAuth.getInstance();
         createLoginRequest();
-
-        btnContinueLocally.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent1);
-            }
-        });
 
         btnSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,17 +54,6 @@ public class SignInActivity extends AppCompatActivity {
                 signIn();
             }
         });
-
-        btnSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mGoogleSignClient.signOut();
-                Toast.makeText(SignInActivity.this, "Your are logged out", Toast.LENGTH_SHORT).show();
-                btnSignOut.setVisibility(View.INVISIBLE);
-
-            }
-        });
-
     }
 
     private void createLoginRequest(){
@@ -125,6 +106,7 @@ public class SignInActivity extends AppCompatActivity {
                     Log.d(TAG, "signInWithCredential:success");
                     FirebaseUser user = mAuth.getCurrentUser();
                     Intent mainscreenIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    writeUserData(user.getUid(), user.getDisplayName());
                     startActivity(mainscreenIntent);
                 }
                 else{
@@ -135,9 +117,12 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
     }
+    private void writeUserData(String userID, String name){
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("users").child(userID).child("username").setValue(name);
+    }
 
     private void updateUI(FirebaseUser firebaseUser){
-        btnSignOut.setVisibility(View.VISIBLE);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if (account != null) {
             String personName = account.getDisplayName();

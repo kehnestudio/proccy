@@ -22,6 +22,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -66,6 +68,8 @@ public class Goals extends Fragment{
     int score3 = 5;
     int score4 = 5;
     public Intent serviceIntent;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
 
     public Goals() {
         // Required empty public constructor
@@ -103,6 +107,7 @@ public class Goals extends Fragment{
         checkBox4 = getView().findViewById(R.id.checkBox4);
 
         seekbar_timer = getView().findViewById(R.id.seekBar_timer);
+
 
         changeCheckBox();
 
@@ -275,6 +280,7 @@ public class Goals extends Fragment{
 
         PreferencesConfig.saveDailyScore(requireActivity(), scoreDaily);
         PreferencesConfig.saveTotalScore(requireActivity(), scoreTotal);
+        writeUserData(scoreTotal);
     }
 
     private void updateButtons() {
@@ -305,6 +311,13 @@ public class Goals extends Fragment{
                 mButtonReset.setVisibility(View.INVISIBLE);
             }
         }
+    }
+
+    private void writeUserData(int totalscore){
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("users").child(user.getUid()).child("totalscore").setValue(totalscore);
     }
 
     public void changeCheckBox() {
