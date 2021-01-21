@@ -103,7 +103,6 @@ public class TimerService extends Service {
 
             @Override
             public void onFinish() {
-                Log.d(TAG, "onFinish: Timer is Done ");
                 sendUpdateButtonBroadcast();
                 sendOnFinish();
                 PreferencesConfig.saveTimerHasFinished(getApplicationContext(), true);

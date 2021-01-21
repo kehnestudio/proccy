@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -81,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void scheduleDailyScoreReset() {
-
         alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, Receiver.class);
 

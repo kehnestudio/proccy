@@ -11,18 +11,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.procrastinator.proccy.CurrentDayDecorator;
+import com.procrastinator.proccy.DotSpanDecorator;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 public class Progress extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private int scoreDaily;
+    private int scoreDaily, scoreTotal;
     private ProgressBar progress;
-    private TextView progressText;
+    private TextView progressText, scoreDailyTextView, scoreTotalTextView;
     private Button button_resetProgress;
+    MaterialCalendarView calendarView;
 
     public Progress() {
         // Required empty public constructor
@@ -40,16 +47,38 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
 
         progress = getView().findViewById(R.id.progress_bar);
         progressText = getView().findViewById(R.id.text_view_progress);
+        scoreDailyTextView = getView().findViewById(R.id.dailyScoreDisplay_progress);
+        scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay_progress);
         button_resetProgress = getView().findViewById(R.id.resetButton);
         button_resetProgress.setOnClickListener(v -> resetDailyScore());
-        updateProgressBar();
+        calendarView = getView().findViewById(R.id.calendarView);
+        calendarView.addDecorators(new CurrentDayDecorator(requireActivity()));
 
+        // https://stackoverflow.com/questions/50685231/materialcalendarview-dotspan-not-appearing
+        calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+
+                DotSpanDecorator eventDecorator= new DotSpanDecorator(date);
+                widget.addDecorator(eventDecorator);
+                widget.invalidateDecorators();
+
+            }
+        });
+
+        updateProgressBar();
         super.onViewCreated(view, savedInstanceState);
     }
 
-
     public void updateProgressBar() {
+        String dailyScoreText = getResources().getString(R.string.textview_score_daily);
+        String totalScoreText = getResources().getString(R.string.textview_score_total);
         scoreDaily = PreferencesConfig.loadDailyScore(requireActivity());
+        scoreTotal = PreferencesConfig.loadTotalScore(requireActivity());
+
+        scoreDailyTextView.setText(dailyScoreText + scoreDaily);
+        scoreTotalTextView.setText(totalScoreText + scoreTotal);
+
         progressText.setText(scoreDaily + " %");
         progress.setProgress(scoreDaily);
     }
