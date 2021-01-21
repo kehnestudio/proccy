@@ -29,6 +29,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
 import com.procrastinator.proccy.Receiver;
@@ -36,8 +38,10 @@ import com.procrastinator.proccy.TimerService;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.procrastinator.proccy.Receiver.SEND_ON_FINISH;
 import static com.procrastinator.proccy.Receiver.UPDATE_BUTTONS;
@@ -68,8 +72,9 @@ public class Goals extends Fragment{
     int score3 = 5;
     int score4 = 5;
     public Intent serviceIntent;
-    private DatabaseReference mDatabase;
+
     private FirebaseAuth mAuth;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public Goals() {
         // Required empty public constructor
@@ -316,10 +321,10 @@ public class Goals extends Fragment{
     }
 
     private void writeUserData(int totalscore){
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child(user.getUid()).child("totalscore").setValue(totalscore);
+            mAuth = FirebaseAuth.getInstance();
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("totalscore", totalscore);
+            db.collection("users").document(mAuth.getUid()).set(userMap, SetOptions.merge());
     }
 
     public void changeCheckBox() {

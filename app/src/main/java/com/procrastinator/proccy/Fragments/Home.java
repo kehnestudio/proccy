@@ -1,5 +1,6 @@
 package com.procrastinator.proccy.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,6 +30,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.procrastinator.proccy.MainActivity;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
@@ -45,6 +51,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
     private Button signOutButton;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+    private int scoreDaily, scoreTotal;
 
     public Home() {
         // Required empty public constructor
@@ -53,22 +60,21 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
+        displayNameTextView = getView().findViewById(R.id.textView_displayname);
+        displayNameTextView.setText("Willkommen, " + PreferencesConfig.loadUserName(requireActivity()));
         scoreDailyTextView = getView().findViewById(R.id.dailyScoreDisplay);
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay);
-        displayNameTextView = getView().findViewById(R.id.textView_displayname);
         signOutButton = getView().findViewById(R.id.button_sign_out);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        if (user !=  null){
-            displayNameTextView.setText("Willkommen, " + user.getDisplayName());
-        }
+        updateDailyAndTotalScore();
 
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +83,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
             }
         });
 
-        updateDailyAndTotalScore();
+
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -110,21 +116,12 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
     }
 
     public void updateDailyAndTotalScore() {
-        String dailyscoreText = getResources().getString(R.string.textview_score_daily);
-        scoreDailyTextView.setText(dailyscoreText + PreferencesConfig.loadDailyScore(requireActivity()));
+        String dailyScoreText = getResources().getString(R.string.textview_score_daily);
+        String totalScoreText = getResources().getString(R.string.textview_score_total);
+        scoreDaily = PreferencesConfig.loadDailyScore(requireActivity());
+        scoreTotal = PreferencesConfig.loadTotalScore(requireActivity());
 
-        String totalscoreText = getResources().getString(R.string.textview_score_total);
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    int totalScore = Integer.parseInt(String.valueOf(snapshot.child(user.getUid()).child("totalscore").getValue()));
-                    scoreTotalTextView.setText(totalscoreText + totalScore);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+        scoreDailyTextView.setText(dailyScoreText + scoreDaily);
+        scoreTotalTextView.setText(totalScoreText + scoreTotal);
     }
-
 }

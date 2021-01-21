@@ -21,7 +21,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
-
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (user != null) {

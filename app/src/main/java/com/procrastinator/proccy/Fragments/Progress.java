@@ -25,9 +25,9 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 public class Progress extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private int scoreDaily;
+    private int scoreDaily, scoreTotal;
     private ProgressBar progress;
-    private TextView progressText;
+    private TextView progressText, scoreDailyTextView, scoreTotalTextView;
     private Button button_resetProgress;
     MaterialCalendarView calendarView;
 
@@ -47,6 +47,8 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
 
         progress = getView().findViewById(R.id.progress_bar);
         progressText = getView().findViewById(R.id.text_view_progress);
+        scoreDailyTextView = getView().findViewById(R.id.dailyScoreDisplay_progress);
+        scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay_progress);
         button_resetProgress = getView().findViewById(R.id.resetButton);
         button_resetProgress.setOnClickListener(v -> resetDailyScore());
         calendarView = getView().findViewById(R.id.calendarView);
@@ -68,9 +70,15 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
         super.onViewCreated(view, savedInstanceState);
     }
 
-
     public void updateProgressBar() {
+        String dailyScoreText = getResources().getString(R.string.textview_score_daily);
+        String totalScoreText = getResources().getString(R.string.textview_score_total);
         scoreDaily = PreferencesConfig.loadDailyScore(requireActivity());
+        scoreTotal = PreferencesConfig.loadTotalScore(requireActivity());
+
+        scoreDailyTextView.setText(dailyScoreText + scoreDaily);
+        scoreTotalTextView.setText(totalScoreText + scoreTotal);
+
         progressText.setText(scoreDaily + " %");
         progress.setProgress(scoreDaily);
     }

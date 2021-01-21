@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void scheduleDailyScoreReset() {
-
         alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, Receiver.class);
 

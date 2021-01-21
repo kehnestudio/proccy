@@ -11,6 +11,19 @@ public class PreferencesConfig {
     public static final String PREF_TIMER_MILLIESLEFT = "millisLeft";
     public static final String PREF_TIMER_RUNNING = "timerRunning";
     public static final String PREF_TIMER_HAS_FINISHED = "timerFinished";
+    public static final String PREF_USER_NAME = "userName";
+
+    public static void saveUserName(Context context, String userName) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(PREF_USER_NAME, userName);
+        editor.apply();
+    }
+
+    public static String loadUserName(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        return pref.getString(PREF_USER_NAME, "my friend");
+    }
 
     public static void saveDailyScore(Context context, int dailyScore) {
         SharedPreferences pref = context.getSharedPreferences(MY_PREFERENCE_NAME, Context.MODE_PRIVATE);

@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class ApplicationClass extends Application {
 
     public static final String CHANNEL_1_ID = "channel_1";
