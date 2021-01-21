@@ -57,7 +57,7 @@ public class Goals extends Fragment{
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
     //TIMER TEXTVIEW UND BUTTONS
     private TextView mTextViewCountDown;
-    private Button mButtonStartPause, mButtonReset;
+    private Button mButtonStartPause, mButtonReset, mButtonRefresh;
     private SeekBar seekbar_timer;
     private CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
     private int scoreDaily;
@@ -100,6 +100,7 @@ public class Goals extends Fragment{
         mTextViewCountDown = getView().findViewById(R.id.text_view_timer);
         mButtonStartPause = getView().findViewById(R.id.button_start);
         mButtonReset = getView().findViewById(R.id.button_reset);
+        mButtonRefresh = getView().findViewById(R.id.btn_refresh);
 
         checkBox1 = getView().findViewById(R.id.checkBox);
         checkBox2 = getView().findViewById(R.id.checkBox2);
@@ -108,8 +109,12 @@ public class Goals extends Fragment{
 
         seekbar_timer = getView().findViewById(R.id.seekBar_timer);
 
-
-        changeCheckBox();
+        mButtonRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCheckBox();
+            }
+        });
 
         mButtonStartPause.setOnClickListener(v -> {
             if (START_TIME_IN_MILLIS >= 3000) {
@@ -257,11 +262,6 @@ public class Goals extends Fragment{
         scoreDaily = PreferencesConfig.loadDailyScore(requireActivity());
         scoreTotal = PreferencesConfig.loadTotalScore(requireActivity());
 
-        Log.d("TAG", "onFinish1: " + score1);
-        Log.d("TAG", "onFinish2: " + score2);
-        Log.d("TAG", "onFinish3: " + score3);
-        Log.d("TAG", "onFinish4: " + score4);
-
         scoreTemp = 10;
         if (checkBox1.isChecked()) {
             scoreTemp += score1;
@@ -289,6 +289,7 @@ public class Goals extends Fragment{
             checkBox2.setEnabled(false);
             checkBox3.setEnabled(false);
             checkBox4.setEnabled(false);
+            mButtonRefresh.setVisibility(View.INVISIBLE);
             seekbar_timer.setVisibility(View.INVISIBLE);
             mButtonStartPause.setVisibility(View.INVISIBLE);
             mButtonReset.setVisibility(View.VISIBLE);
@@ -303,6 +304,7 @@ public class Goals extends Fragment{
                 checkBox4.setEnabled(true);
                 seekbar_timer.setVisibility(View.VISIBLE);
                 mButtonStartPause.setVisibility(View.VISIBLE);
+                mButtonRefresh.setVisibility(View.VISIBLE);
 
             }
             if (mTimeLeftInMillis < START_TIME_IN_MILLIS) {
@@ -328,20 +330,16 @@ public class Goals extends Fragment{
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 String languageCode = Locale.getDefault().getLanguage();
-                // Counts number of questions (children) on firebase
                 long childrenCount = snapshot.getChildrenCount();
-                //sets max number based on children count
                 int max = (int) childrenCount;
 
-                //creates a new ArrayList with size of childrenCount
                 final List<Integer> l = new ArrayList<>();
                 for (int j = 0; j < max; j++) {
                     l.add(j);
                 }
-                //Shuffles the created Arraylist
+
                 Collections.shuffle(l);
 
-                //Converts the Integers in Array List to Strings
                 String count1 = Integer.toString(l.get(0));
                 String count2 = Integer.toString(l.get(1));
                 String count3 = Integer.toString(l.get(2));
@@ -349,12 +347,10 @@ public class Goals extends Fragment{
 
                 if (!mTimerRunning && snapshot.exists()) {
 
-                    Log.d("TAG", "onDataChange exists");
                     String check1 = snapshot.child(count1).child(languageCode).getValue(String.class);
                     String check2 = snapshot.child(count2).child(languageCode).getValue(String.class);
                     String check3 = snapshot.child(count3).child(languageCode).getValue(String.class);
                     String check4 = snapshot.child(count4).child(languageCode).getValue(String.class);
-
 
                     score1 = Integer.parseInt(String.valueOf(snapshot.child(count1).child("score").getValue()));
                     score2 = Integer.parseInt(String.valueOf(snapshot.child(count2).child("score").getValue()));
@@ -366,9 +362,7 @@ public class Goals extends Fragment{
                     checkBox3.setText(check3);
                     checkBox4.setText(check4);
 
-                    Log.d("TAG", "changeCheckBox: TIMER NOT RUNNING, DID UPDATE" + mTimerRunning);
                 } else {
-
                     Log.d("TAG", "onDataChange: doesn't exist");
                 }
             }
