@@ -30,6 +30,7 @@ android {
 
 repositories {
     google()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -38,7 +39,7 @@ dependencies {
     def nav_version = "2.3.2"
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
-
+    implementation 'com.github.prolificinteractive:material-calendarview:1.4.3'
 
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.firebase:firebase-analytics:18.0.1'
@@ -62,6 +63,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
 
 
     //CONSTRAINT  LAYOUT

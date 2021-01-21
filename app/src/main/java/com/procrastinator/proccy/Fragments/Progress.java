@@ -11,11 +11,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.procrastinator.proccy.CurrentDayDecorator;
+import com.procrastinator.proccy.DotSpanDecorator;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 public class Progress extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -23,6 +29,7 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     private ProgressBar progress;
     private TextView progressText;
     private Button button_resetProgress;
+    MaterialCalendarView calendarView;
 
     public Progress() {
         // Required empty public constructor
@@ -42,8 +49,22 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
         progressText = getView().findViewById(R.id.text_view_progress);
         button_resetProgress = getView().findViewById(R.id.resetButton);
         button_resetProgress.setOnClickListener(v -> resetDailyScore());
-        updateProgressBar();
+        calendarView = getView().findViewById(R.id.calendarView);
+        calendarView.addDecorators(new CurrentDayDecorator(requireActivity()));
 
+        // https://stackoverflow.com/questions/50685231/materialcalendarview-dotspan-not-appearing
+        calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+
+                DotSpanDecorator eventDecorator= new DotSpanDecorator(date);
+                widget.addDecorator(eventDecorator);
+                widget.invalidateDecorators();
+
+            }
+        });
+
+        updateProgressBar();
         super.onViewCreated(view, savedInstanceState);
     }
 
