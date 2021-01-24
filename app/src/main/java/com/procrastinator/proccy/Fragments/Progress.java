@@ -16,7 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.procrastinator.proccy.CurrentDayDecorator;
+import com.procrastinator.proccy.DataHolder;
 import com.procrastinator.proccy.DotSpanDecorator;
+import com.procrastinator.proccy.MainActivity;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -25,14 +27,36 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 public class Progress extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String ARG_PARAM1 = "daily score";
+    private static final String ARG_PARAM2 = "total score";
     private int scoreDaily, scoreTotal;
     private ProgressBar progress;
     private TextView progressText, scoreDailyTextView, scoreTotalTextView;
     private Button button_resetProgress;
-    MaterialCalendarView calendarView;
+    private MaterialCalendarView calendarView;
+    int mParam1;
+    String mParam2;
 
     public Progress() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //if (getArguments() != null) {
+        //    mParam1 = getArguments().getInt(ARG_PARAM1);
+        //    mParam2 = getArguments().getString(ARG_PARAM2);
+        //}
+    }
+
+    public static Progress newInstance(int param1, String param2) {
+        Progress fragment = new Progress();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -73,8 +97,8 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     public void updateProgressBar() {
         String dailyScoreText = getResources().getString(R.string.textview_score_daily);
         String totalScoreText = getResources().getString(R.string.textview_score_total);
-        scoreDaily = PreferencesConfig.loadDailyScore(requireActivity());
-        scoreTotal = PreferencesConfig.loadTotalScore(requireActivity());
+        scoreDaily = DataHolder.getInstance().getDailyScore();
+        scoreTotal =  DataHolder.getInstance().getTotalScore();
 
         scoreDailyTextView.setText(dailyScoreText + scoreDaily);
         scoreTotalTextView.setText(totalScoreText + scoreTotal);
@@ -84,7 +108,7 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     }
 
     public void resetDailyScore() {
-        PreferencesConfig.removeDailyScoreFromPref(requireActivity());
+        DataHolder.getInstance().setDailyScore(0);
         updateProgressBar();
     }
     @Override

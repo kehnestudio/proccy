@@ -16,7 +16,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -39,7 +41,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.procrastinator.proccy.Fragments.Goals;
+import com.procrastinator.proccy.Fragments.Home;
+import com.procrastinator.proccy.Fragments.Progress;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
@@ -48,9 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
+    public static int totalscore;
+    public static String displayname;
+    //FirebaseAuth mAuth;
+    //FirebaseUser user;
 
+    FirebaseFirestore db;
     BottomNavigationView bottomNavigationView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +69,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainactivity);
 
+        // mAuth = FirebaseAuth.getInstance();
+        //user = mAuth.getCurrentUser();
+
+        //updateNameAndScores();
         onNewIntent(getIntent());
         scheduleDailyScoreReset();
         setUpNavigation();
+
     }
+
 
     public void setUpNavigation(){
         bottomNavigationView =findViewById(R.id.bottom_navigation);
@@ -69,6 +86,13 @@ public class MainActivity extends AppCompatActivity {
                 .findFragmentById(R.id.nav_host_fragment_container);
         NavigationUI.setupWithNavController(bottomNavigationView,
                 navHostFragment.getNavController());
+    }
+
+    public void openFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.nav_host_fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     @Override
@@ -80,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
 
     public void scheduleDailyScoreReset() {
         alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);

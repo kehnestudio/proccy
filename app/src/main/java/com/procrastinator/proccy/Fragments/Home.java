@@ -1,6 +1,5 @@
 package com.procrastinator.proccy.Fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,44 +16,47 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.procrastinator.proccy.MainActivity;
+import com.procrastinator.proccy.DataHolder;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
 import com.procrastinator.proccy.SignInActivity;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
 public class Home extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String ARG_PARAM1 = "daily score";
+    private static final String ARG_PARAM2 = "total score";
     private TextView scoreDailyTextView, scoreTotalTextView, displayNameTextView;
     private Button signOutButton;
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
     private int scoreDaily, scoreTotal;
+    private String displayName;
 
     public Home() {
         // Required empty public constructor
+    }
+
+    public static Home newInstance(int param1, String param2) {
+        Home fragment = new Home();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //if (getArguments() != null) {
+        //    scoreTotal = getArguments().getInt(ARG_PARAM1);
+        //    displayName = getArguments().getString(ARG_PARAM2);
+        //}
+
     }
 
     @Override
@@ -66,15 +68,13 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
         displayNameTextView = getView().findViewById(R.id.textView_displayname);
-        displayNameTextView.setText("Willkommen, " + PreferencesConfig.loadUserName(requireActivity()));
         scoreDailyTextView = getView().findViewById(R.id.dailyScoreDisplay);
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay);
         signOutButton = getView().findViewById(R.id.button_sign_out);
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
 
-        updateDailyAndTotalScore();
+        updateUI();
 
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +87,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void sendToLogin() { //funtion
+    private void sendToLogin() {
         GoogleSignInClient mGoogleSignInClient ;
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -100,6 +100,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
                     public void onComplete(@NonNull Task<Void> task) {
                         FirebaseAuth.getInstance().signOut(); //signout firebase
                         Intent setupIntent = new Intent(requireActivity(), SignInActivity.class);
+                        PreferencesConfig.clearAllPreferences(getActivity());
                         Toast.makeText(requireActivity(), "Logged Out", Toast.LENGTH_LONG).show(); //if u want to show some text
                         setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(setupIntent);
@@ -111,17 +112,20 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(PreferencesConfig.PREF_DAILY_SCORE)) {
-            updateDailyAndTotalScore();
+            updateUI();
         }
     }
 
-    public void updateDailyAndTotalScore() {
+    public void updateUI() {
         String dailyScoreText = getResources().getString(R.string.textview_score_daily);
         String totalScoreText = getResources().getString(R.string.textview_score_total);
-        scoreDaily = PreferencesConfig.loadDailyScore(requireActivity());
-        scoreTotal = PreferencesConfig.loadTotalScore(requireActivity());
+        scoreDaily = DataHolder.getInstance().getDailyScore();
+        scoreTotal = DataHolder.getInstance().getTotalScore();
+        displayName = DataHolder.getInstance().getDisplayName();
 
-        scoreDailyTextView.setText(dailyScoreText + scoreDaily);
+
         scoreTotalTextView.setText(totalScoreText + scoreTotal);
+        scoreDailyTextView.setText(dailyScoreText + scoreDaily);
+        displayNameTextView.setText("Willkommen, " + displayName);
     }
 }
