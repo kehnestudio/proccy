@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,7 +22,6 @@ import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.procrastinator.proccy.DataHolder;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
 import com.procrastinator.proccy.Receiver;
@@ -49,10 +48,10 @@ import static com.procrastinator.proccy.Receiver.UPDATE_COUNTDOWN_TEXT;
 import static com.procrastinator.proccy.TimerService.TIMER_RUNNING;
 import static com.procrastinator.proccy.TimerService.TIME_LEFT_IN_MILLIS;
 
-public class Goals extends Fragment{
+public class Goals extends Fragment {
 
-    private static final String ARG_PARAM1 = "ARG_PARAM1";
-    private static final String ARG_PARAM2 = "ARG_PARAM2";
+    private static final String ARG_PARAM1 = "daily score";
+    private static final String ARG_PARAM2 = "total score";
     //TIMER VARIABLEN
     //private long START_TIME_IN_MILLIS = 300000;
     private long START_TIME_IN_MILLIS = 10000; //TEST VALUE
@@ -62,37 +61,42 @@ public class Goals extends Fragment{
     //TIMER TEXTVIEW UND BUTTONS
     private TextView mTextViewCountDown;
     private Button mButtonStartPause, mButtonReset, mButtonRefresh;
-    private SeekBar seekbar_timer;
-    private CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
-    private int scoreDaily;
-    private int scoreTotal;
-    private int scoreTemp;
-    int score1 = 5;
-    int score2 = 5;
-    int score3 = 5;
-    int score4 = 5;
-    public Intent serviceIntent;
-
-    private FirebaseAuth mAuth;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private SeekBar mSeekBarTimer;
+    private CheckBox mCheckbox1, mCheckbox2, mCheckbox3, mCheckbox4;
+    private int mScoreDaily;
+    private int mScoreTotal;
+    private int mScoreTemporary;
+    int mScoreOffline1 = 5;
+    int mScoreOffline2 = 5;
+    int mScoreOffline3 = 5;
+    int mScoreOffline4 = 5;
+    public Intent mServiceIntent;
 
     public Goals() {
         // Required empty public constructor
     }
 
-    public static Goals newInstance(String param1, String param2) {
+    public static Goals newInstance(int param1, String param2) {
         Goals fragment = new Goals();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putInt(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
-    
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //if (getArguments() != null) {
+        //    mScoreTotal = getArguments().getInt(ARG_PARAM1);
+        //    displayName = getArguments().getString(ARG_PARAM2);
+        //}
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_goals, container, false);
     }
 
@@ -100,19 +104,19 @@ public class Goals extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        serviceIntent = new Intent(requireActivity(), TimerService.class);
+        mServiceIntent = new Intent(requireActivity(), TimerService.class);
 
         mTextViewCountDown = getView().findViewById(R.id.text_view_timer);
         mButtonStartPause = getView().findViewById(R.id.button_start);
         mButtonReset = getView().findViewById(R.id.button_reset);
         mButtonRefresh = getView().findViewById(R.id.btn_refresh);
 
-        checkBox1 = getView().findViewById(R.id.checkBox);
-        checkBox2 = getView().findViewById(R.id.checkBox2);
-        checkBox3 = getView().findViewById(R.id.checkBox3);
-        checkBox4 = getView().findViewById(R.id.checkBox4);
+        mCheckbox1 = getView().findViewById(R.id.checkBox);
+        mCheckbox2 = getView().findViewById(R.id.checkBox2);
+        mCheckbox3 = getView().findViewById(R.id.checkBox3);
+        mCheckbox4 = getView().findViewById(R.id.checkBox4);
 
-        seekbar_timer = getView().findViewById(R.id.seekBar_timer);
+        mSeekBarTimer = getView().findViewById(R.id.seekBar_timer);
 
         mButtonRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,14 +126,12 @@ public class Goals extends Fragment{
         });
 
         mButtonStartPause.setOnClickListener(v -> {
-            if (START_TIME_IN_MILLIS >= 3000) {
-                startService();
-            }
+            startTimer();
         });
 
         mButtonReset.setOnClickListener(v -> resetTimer());
 
-        seekbar_timer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mSeekBarTimer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 START_TIME_IN_MILLIS = progress * 60000;
@@ -163,14 +165,35 @@ public class Goals extends Fragment{
             } else if (SEND_ON_FINISH.equals(intent.getAction())) {
                 Log.d("TAG", "onReceive: stopping service");
                 boolean hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
-                updateScore();
-                if (hasFinished){
+                if (hasFinished) {
                     playAnimation();
+                    updateScore();
                     PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
                 }
             }
         }
     };
+
+    private void startTimer(){
+        if (START_TIME_IN_MILLIS >= 3000) {
+
+            mScoreTemporary = 10;
+            if (mCheckbox1.isChecked()) {
+                mScoreTemporary += mScoreOffline1;
+            }
+            if (mCheckbox2.isChecked()) {
+                mScoreTemporary += mScoreOffline2;
+            }
+            if (mCheckbox3.isChecked()) {
+                mScoreTemporary += mScoreOffline3;
+            }
+            if (mCheckbox4.isChecked()) {
+                mScoreTemporary += mScoreOffline4;
+            }
+            PreferencesConfig.saveTempScore(requireActivity(), mScoreTemporary);
+            startService();
+        }
+    }
 
     @Override
     public void onPause() {
@@ -178,6 +201,7 @@ public class Goals extends Fragment{
         requireActivity().unregisterReceiver(updateReceiver);
         PreferencesConfig.saveTimerRunning(requireActivity(), mTimerRunning);
         PreferencesConfig.saveMilliesLeft(requireActivity(), mTimeLeftInMillis);
+
     }
 
     @Override
@@ -185,24 +209,26 @@ public class Goals extends Fragment{
         super.onResume();
 
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(UPDATE_BUTTONS); // Action1 to filter
+        intentFilter.addAction(UPDATE_BUTTONS);
         intentFilter.addAction(UPDATE_COUNTDOWN_TEXT);
-        intentFilter.addAction(SEND_ON_FINISH);// Action2 to filter
+        intentFilter.addAction(SEND_ON_FINISH);
+
         requireActivity().registerReceiver(updateReceiver, intentFilter);
         mTimerRunning = PreferencesConfig.loadTimerRunning(requireActivity());
         mTimeLeftInMillis = PreferencesConfig.loadMilliesLeft(requireActivity());
         boolean hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
-        if (hasFinished){
+
+        if (hasFinished) {
             playAnimation();
+            updateScore();
             PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
         }
-        if(mTimerRunning){
+        if (mTimerRunning) {
             startService();
+        } else {
+            updateCountDownText();
+            updateButtons();
         }
-        updateCountDownText();
-        updateButtons();
-
-
         if (mTimeLeftInMillis < 0) {
             mTimeLeftInMillis = 0;
             mTimerRunning = false;
@@ -264,38 +290,30 @@ public class Goals extends Fragment{
 
     private void updateScore() {
 
-        scoreDaily = PreferencesConfig.loadDailyScore(requireActivity());
-        scoreTotal = PreferencesConfig.loadTotalScore(requireActivity());
+        mScoreTotal = DataHolder.getInstance().getTotalScore();
+        mScoreDaily = DataHolder.getInstance().getDailyScore();
+        mScoreTemporary = PreferencesConfig.loadTempScore(requireActivity());
 
-        scoreTemp = 10;
-        if (checkBox1.isChecked()) {
-            scoreTemp += score1;
-        }
-        if (checkBox2.isChecked()) {
-            scoreTemp += score2;
-        }
-        if (checkBox3.isChecked()) {
-            scoreTemp += score3;
-        }
-        if (checkBox4.isChecked()) {
-            scoreTemp += score4;
-        }
-        scoreDaily += scoreTemp;
-        scoreTotal += scoreTemp;
+        mScoreDaily += mScoreTemporary;
+        mScoreTotal += mScoreTemporary;
 
-        PreferencesConfig.saveDailyScore(requireActivity(), scoreDaily);
-        PreferencesConfig.saveTotalScore(requireActivity(), scoreTotal);
-        writeUserData(scoreTotal);
+        Log.d("TAG", "updateScore: " + mScoreTotal);
+
+        PreferencesConfig.removeTempScore(requireActivity());
+        DataHolder.getInstance().setTotalScore(mScoreTotal);
+        DataHolder.getInstance().setDailyScore(mScoreDaily);
+        writeUserData(mScoreTotal);
+
     }
 
     private void updateButtons() {
         if (mTimerRunning) {
-            checkBox1.setEnabled(false);
-            checkBox2.setEnabled(false);
-            checkBox3.setEnabled(false);
-            checkBox4.setEnabled(false);
+            mCheckbox1.setEnabled(false);
+            mCheckbox2.setEnabled(false);
+            mCheckbox3.setEnabled(false);
+            mCheckbox4.setEnabled(false);
             mButtonRefresh.setVisibility(View.INVISIBLE);
-            seekbar_timer.setVisibility(View.INVISIBLE);
+            mSeekBarTimer.setVisibility(View.INVISIBLE);
             mButtonStartPause.setVisibility(View.INVISIBLE);
             mButtonReset.setVisibility(View.VISIBLE);
 
@@ -303,11 +321,11 @@ public class Goals extends Fragment{
             if (mTimeLeftInMillis < 1000) {
                 mButtonStartPause.setVisibility(View.INVISIBLE);
             } else {
-                checkBox1.setEnabled(true);
-                checkBox2.setEnabled(true);
-                checkBox3.setEnabled(true);
-                checkBox4.setEnabled(true);
-                seekbar_timer.setVisibility(View.VISIBLE);
+                mCheckbox1.setEnabled(true);
+                mCheckbox2.setEnabled(true);
+                mCheckbox3.setEnabled(true);
+                mCheckbox4.setEnabled(true);
+                mSeekBarTimer.setVisibility(View.VISIBLE);
                 mButtonStartPause.setVisibility(View.VISIBLE);
                 mButtonRefresh.setVisibility(View.VISIBLE);
 
@@ -320,11 +338,14 @@ public class Goals extends Fragment{
         }
     }
 
-    private void writeUserData(int totalscore){
-            mAuth = FirebaseAuth.getInstance();
-            Map<String, Object> userMap = new HashMap<>();
-            userMap.put("totalscore", totalscore);
-            db.collection("users").document(mAuth.getUid()).set(userMap, SetOptions.merge());
+    private void writeUserData(int totalscore) {
+        FirebaseAuth mAuth;
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        mAuth = FirebaseAuth.getInstance();
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("totalscore", totalscore);
+        db.collection("users").document(mAuth.getUid()).set(userMap, SetOptions.merge());
     }
 
     public void changeCheckBox() {
@@ -357,15 +378,15 @@ public class Goals extends Fragment{
                     String check3 = snapshot.child(count3).child(languageCode).getValue(String.class);
                     String check4 = snapshot.child(count4).child(languageCode).getValue(String.class);
 
-                    score1 = Integer.parseInt(String.valueOf(snapshot.child(count1).child("score").getValue()));
-                    score2 = Integer.parseInt(String.valueOf(snapshot.child(count2).child("score").getValue()));
-                    score3 = Integer.parseInt(String.valueOf(snapshot.child(count3).child("score").getValue()));
-                    score4 = Integer.parseInt(String.valueOf(snapshot.child(count4).child("score").getValue()));
+                    mScoreOffline1 = Integer.parseInt(String.valueOf(snapshot.child(count1).child("score").getValue()));
+                    mScoreOffline2 = Integer.parseInt(String.valueOf(snapshot.child(count2).child("score").getValue()));
+                    mScoreOffline3 = Integer.parseInt(String.valueOf(snapshot.child(count3).child("score").getValue()));
+                    mScoreOffline4 = Integer.parseInt(String.valueOf(snapshot.child(count4).child("score").getValue()));
 
-                    checkBox1.setText(check1);
-                    checkBox2.setText(check2);
-                    checkBox3.setText(check3);
-                    checkBox4.setText(check4);
+                    mCheckbox1.setText(check1);
+                    mCheckbox2.setText(check2);
+                    mCheckbox3.setText(check3);
+                    mCheckbox4.setText(check4);
 
                 } else {
                     Log.d("TAG", "onDataChange: doesn't exist");
@@ -385,7 +406,7 @@ public class Goals extends Fragment{
     }
 
     public void stopService() {
-        requireActivity().stopService(new Intent(getActivity(),TimerService.class));
+        requireActivity().stopService(new Intent(getActivity(), TimerService.class));
     }
 
 

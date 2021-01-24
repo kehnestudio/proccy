@@ -13,6 +13,10 @@
         <action
             android:id="@+id/action_fragment_home_to_fragment_goals"
             app:destination="@id/fragment_goals" />
+        <argument
+            android:name="totalScore"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/fragment_progress"

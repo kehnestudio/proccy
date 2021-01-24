@@ -39,7 +39,10 @@ public class SignInActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignClient;
     private String TAG = "SignInTestTags";
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private int totalscore;
     private int RC_SIGN_IN = 1;
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -106,13 +109,11 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
+                    user = mAuth.getCurrentUser();
                     Toast.makeText(SignInActivity.this, "Successful", Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "signInWithCredential:success");
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    Intent mainscreenIntent = new Intent(getApplicationContext(), MainActivity.class);
                     checkUserDataOnLogin(user.getUid(), user.getDisplayName());
-                    updatePreferences(user.getUid(), user.getDisplayName());
-                    startActivity(mainscreenIntent);
+                    updateNameAndScores();
                 } else {
                     Toast.makeText(SignInActivity.this, "Failed", Toast.LENGTH_SHORT).show();
                     Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -121,34 +122,46 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
+    private void updateNameAndScores(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Log.d("TAG", "updateNameAndScores: Iam starting");
+
+        if (user != null) {
+            String uid = user.getUid();
+            String displayname = user.getDisplayName();
+            DataHolder.getInstance().setDisplayName(displayname);
+            DocumentReference docRef = db.collection("users").document(uid);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null) {
+                            if (document.getLong("totalscore") != null) {
+                                DataHolder.getInstance().setTotalScore(document.getLong("totalscore").intValue());
+                                Log.d("LOGGER123", "Set totalscore to: " + DataHolder.getInstance().getTotalScore());
+                                Intent mainscreenIntent = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(mainscreenIntent);
+                            } else {
+                                Log.d("LOGGER", "No such document");
+                            }
+                        } else {
+                            Log.d("LOGGER", "get failed with ", task.getException());
+                        }
+                    }
+                }
+            });
+
+        } else {
+            Log.d("SplashScreenActivity", "updateSharedPreferences: No user found");
+        }
+    }
+
     private void checkUserDataOnLogin(String userId, String name) {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("username", name);
         userMap.put("userid", userId);
         db.collection("users").document(userId).set(userMap, SetOptions.merge());
-    }
-
-    private void updatePreferences(String userId, String username){
-        PreferencesConfig.saveUserName(getApplicationContext(), username);
-        DocumentReference docRef = db.collection("users").document(userId);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null) {
-                        if (document.getLong("totalscore")!=null){
-                            int score = document.getLong("totalscore").intValue();
-                            PreferencesConfig.saveTotalScore(getApplicationContext(), score);
-                        }
-                    } else {
-                        Log.d("LOGGER", "No such document");
-                    }
-                } else {
-                    Log.d("LOGGER", "get failed with ", task.getException());
-                }
-            }
-        });
     }
 
     private void updateUI(FirebaseUser firebaseUser) {
