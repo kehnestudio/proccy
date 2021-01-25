@@ -1,6 +1,7 @@
 package com.procrastinator.proccy.Fragments;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,31 +12,46 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.procrastinator.proccy.CurrentDayDecorator;
+import com.procrastinator.proccy.DailyScore;
 import com.procrastinator.proccy.DataHolder;
-import com.procrastinator.proccy.DotSpanDecorator;
-import com.procrastinator.proccy.MainActivity;
+import com.procrastinator.proccy.EventDecorator;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class Progress extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String ARG_PARAM1 = "daily score";
     private static final String ARG_PARAM2 = "total score";
+    private static final String TAG = "ProgressFragment";
     private int scoreDaily, scoreTotal;
     private ProgressBar progress;
     private TextView progressText, scoreDailyTextView, scoreTotalTextView;
-    private Button button_resetProgress;
+    private Button button_resetProgress, button_fireStore;
     private MaterialCalendarView calendarView;
-    int mParam1;
-    String mParam2;
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private ArrayList<Integer> dailyscoresArrayList = new ArrayList<>();
+    private ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
+
 
     public Progress() {
         // Required empty public constructor
@@ -75,20 +91,10 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay_progress);
         button_resetProgress = getView().findViewById(R.id.resetButton);
         button_resetProgress.setOnClickListener(v -> resetDailyScore());
+        button_fireStore = getView().findViewById(R.id.firestoreButton);
+        button_fireStore.setOnClickListener(v -> loadDailyScores());
         calendarView = getView().findViewById(R.id.calendarView);
         calendarView.addDecorators(new CurrentDayDecorator(requireActivity()));
-
-        // https://stackoverflow.com/questions/50685231/materialcalendarview-dotspan-not-appearing
-        calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
-            @Override
-            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-
-                DotSpanDecorator eventDecorator= new DotSpanDecorator(date);
-                widget.addDecorator(eventDecorator);
-                widget.invalidateDecorators();
-
-            }
-        });
 
         updateProgressBar();
         super.onViewCreated(view, savedInstanceState);
@@ -117,4 +123,36 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
             updateProgressBar();
         }
     }
+
+    private void loadDailyScores() {
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        String uid = user.getUid();
+
+
+        CollectionReference scoreRef = db.collection("users").document(uid).collection("dailyScoreHistory");
+        scoreRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            DailyScore dailyScore = documentSnapshot.toObject(DailyScore.class);
+                            Timestamp timestamp = dailyScore.getDate();
+                            int dailyScoreFromFireStore = dailyScore.getScore();
+                            Date date = timestamp.toDate();
+                            CalendarDay calendarDay = CalendarDay.from(date);
+                            datesArrayList.add(calendarDay);
+                            dailyscoresArrayList.add(dailyScoreFromFireStore);
+                        }
+                        addDecorator(datesArrayList);
+                    }
+                });
+    }
+
+    private void addDecorator(List<CalendarDay> calendarDays) {
+        EventDecorator dailyScoreDecorator = new EventDecorator(Color.RED, calendarDays);
+        calendarView.addDecorator(dailyScoreDecorator);
+        calendarView.invalidateDecorators();
+    }
+
 }
