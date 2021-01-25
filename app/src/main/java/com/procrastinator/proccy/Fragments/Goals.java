@@ -4,11 +4,14 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.icu.text.SimpleDateFormat;
+import android.net.ParseException;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.work.Data;
 
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -21,12 +24,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.procrastinator.proccy.DataHolder;
@@ -35,12 +41,18 @@ import com.procrastinator.proccy.R;
 import com.procrastinator.proccy.Receiver;
 import com.procrastinator.proccy.TimerService;
 
+import java.net.HttpCookie;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import static com.procrastinator.proccy.Receiver.SEND_ON_FINISH;
 import static com.procrastinator.proccy.Receiver.UPDATE_BUTTONS;
@@ -50,6 +62,7 @@ import static com.procrastinator.proccy.TimerService.TIME_LEFT_IN_MILLIS;
 
 public class Goals extends Fragment {
 
+    public static final String TAG = "GoalsFragment";
     private static final String ARG_PARAM1 = "daily score";
     private static final String ARG_PARAM2 = "total score";
     //TIMER VARIABLEN
@@ -58,6 +71,7 @@ public class Goals extends Fragment {
     private CountDownTimer mCountDownTimer;
     private boolean mTimerRunning;
     private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
+    private boolean hasFinished;
     //TIMER TEXTVIEW UND BUTTONS
     private TextView mTextViewCountDown;
     private Button mButtonStartPause, mButtonReset, mButtonRefresh;
@@ -163,18 +177,18 @@ public class Goals extends Fragment {
             } else if (UPDATE_BUTTONS.equals(intent.getAction())) {
                 mTimerRunning = intent.getBooleanExtra(TIMER_RUNNING, false);
             } else if (SEND_ON_FINISH.equals(intent.getAction())) {
-                Log.d("TAG", "onReceive: stopping service");
-                boolean hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
+                hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
                 if (hasFinished) {
                     playAnimation();
                     updateScore();
+                    PreferencesConfig.saveTimerRunning(requireActivity(), false);
                     PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
                 }
             }
         }
     };
 
-    private void startTimer(){
+    private void startTimer() {
         if (START_TIME_IN_MILLIS >= 3000) {
 
             mScoreTemporary = 10;
@@ -199,9 +213,6 @@ public class Goals extends Fragment {
     public void onPause() {
         super.onPause();
         requireActivity().unregisterReceiver(updateReceiver);
-        PreferencesConfig.saveTimerRunning(requireActivity(), mTimerRunning);
-        PreferencesConfig.saveMilliesLeft(requireActivity(), mTimeLeftInMillis);
-
     }
 
     @Override
@@ -212,30 +223,20 @@ public class Goals extends Fragment {
         intentFilter.addAction(UPDATE_BUTTONS);
         intentFilter.addAction(UPDATE_COUNTDOWN_TEXT);
         intentFilter.addAction(SEND_ON_FINISH);
-
         requireActivity().registerReceiver(updateReceiver, intentFilter);
+
         mTimerRunning = PreferencesConfig.loadTimerRunning(requireActivity());
+        hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
         mTimeLeftInMillis = PreferencesConfig.loadMilliesLeft(requireActivity());
-        boolean hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
 
         if (hasFinished) {
             playAnimation();
             updateScore();
+            PreferencesConfig.saveTimerRunning(requireActivity(), false);
             PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
         }
-        if (mTimerRunning) {
-            startService();
-        } else {
-            updateCountDownText();
-            updateButtons();
-        }
-        if (mTimeLeftInMillis < 0) {
-            mTimeLeftInMillis = 0;
-            mTimerRunning = false;
-            PreferencesConfig.saveTimerRunning(requireActivity(), false);
-            updateCountDownText();
-            updateButtons();
-        }
+        updateCountDownText();
+        updateButtons();
     }
 
 
@@ -247,12 +248,10 @@ public class Goals extends Fragment {
     }
 
     private void playAnimation() {
-
         LottieAnimationView animationView = getView().findViewById(R.id.animationView_confetti);
         animationView.setVisibility(View.VISIBLE);
         animationView.setRepeatCount(0);
         animationView.playAnimation();
-
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -277,19 +276,7 @@ public class Goals extends Fragment {
         });
     }
 
-    //RESETTET DEN TIMER
-    private void resetTimer() {
-        mTimerRunning = false;
-        mTimeLeftInMillis = START_TIME_IN_MILLIS;
-        PreferencesConfig.saveTimerRunning(requireActivity(), mTimerRunning);
-        PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
-        updateCountDownText();
-        updateButtons();
-        stopService();
-    }
-
     private void updateScore() {
-
         mScoreTotal = DataHolder.getInstance().getTotalScore();
         mScoreDaily = DataHolder.getInstance().getDailyScore();
         mScoreTemporary = PreferencesConfig.loadTempScore(requireActivity());
@@ -297,16 +284,30 @@ public class Goals extends Fragment {
         mScoreDaily += mScoreTemporary;
         mScoreTotal += mScoreTemporary;
 
-        Log.d("TAG", "updateScore: " + mScoreTotal);
+        Log.d(TAG, "updateScore: mScoreTemporary = " + mScoreTemporary);
+        Log.d(TAG, "updateScore: mScoreTotal =  " + mScoreTotal);
+        Log.d(TAG, "updateScore: mScoreDaily = " + mScoreDaily);
 
         PreferencesConfig.removeTempScore(requireActivity());
         DataHolder.getInstance().setTotalScore(mScoreTotal);
         DataHolder.getInstance().setDailyScore(mScoreDaily);
         writeUserData(mScoreTotal);
+    }
 
+    //RESETTET DEN TIMER
+    private void resetTimer() {
+        mTimeLeftInMillis = START_TIME_IN_MILLIS;
+        PreferencesConfig.saveMilliesLeft(requireActivity(), mTimeLeftInMillis);
+        PreferencesConfig.saveTimerRunning(requireActivity(), false);
+        PreferencesConfig.saveTimerHasFinished(requireActivity(), false);
+        updateCountDownText();
+        updateButtons();
+        stopService();
     }
 
     private void updateButtons() {
+        mTimerRunning = PreferencesConfig.loadTimerRunning(getActivity());
+
         if (mTimerRunning) {
             mCheckbox1.setEnabled(false);
             mCheckbox2.setEnabled(false);
@@ -338,14 +339,52 @@ public class Goals extends Fragment {
         }
     }
 
+    static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+    public Date getDateFromString(String datetoSaved) {
+
+        try {
+            Date date = format.parse(datetoSaved);
+            return date;
+        } catch (ParseException | java.text.ParseException e) {
+            return null;
+        }
+
+    }
+
     private void writeUserData(int totalscore) {
         FirebaseAuth mAuth;
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         mAuth = FirebaseAuth.getInstance();
+        String uid = mAuth.getUid();
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("totalscore", totalscore);
-        db.collection("users").document(mAuth.getUid()).set(userMap, SetOptions.merge());
+        db.collection("users").document(uid).set(userMap, SetOptions.merge());
+
+        Date currentDate = getDateWithoutTimeUsingCalendar();
+        String currentDayWithoutTime = getLocalDate().toString();
+
+        Map<String, Object> newDailyScore = new HashMap<>();
+        newDailyScore.put("score", mScoreDaily);
+        newDailyScore.put("date", new Timestamp(currentDate));
+
+        DocumentReference addedDocRef = db.collection("users").document(uid);
+        addedDocRef.collection("dailyScoreHistory").document(currentDayWithoutTime).set(newDailyScore, SetOptions.merge());
+    }
+
+    public static Date getDateWithoutTimeUsingCalendar() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar.getTime();
+    }
+
+    public static LocalDate getLocalDate() {
+        return LocalDate.now();
     }
 
     public void changeCheckBox() {
@@ -389,7 +428,7 @@ public class Goals extends Fragment {
                     mCheckbox4.setText(check4);
 
                 } else {
-                    Log.d("TAG", "onDataChange: doesn't exist");
+                    Log.d(TAG, "ChangeCheckBox /  onDataChange: doesn't exist");
                 }
             }
 

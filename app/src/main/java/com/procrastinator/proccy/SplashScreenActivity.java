@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
+    private static final String TAG = "SplashScreenActivity";
     private FirebaseAuth mAuth;
     private FirebaseUser user;
 
@@ -46,7 +47,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private void updateNameAndScores(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Log.d("TAG", "updateNameAndScores: Iam starting");
+        Log.d(TAG, "updateNameAndScores: Iam starting");
 
         if (user != null) {
             String uid = user.getUid();
@@ -61,21 +62,21 @@ public class SplashScreenActivity extends AppCompatActivity {
                         if (document != null) {
                             if (document.getLong("totalscore") != null) {
                                 DataHolder.getInstance().setTotalScore(document.getLong("totalscore").intValue());
-                                Log.d("LOGGER123", "Set totalscore to: " + DataHolder.getInstance().getTotalScore());
+                                Log.d(TAG, "Set totalscore to: " + DataHolder.getInstance().getTotalScore());
                                 Intent mainscreenIntent = new Intent(getApplicationContext(), MainActivity.class);
                                 startActivity(mainscreenIntent);
                             } else {
-                                Log.d("LOGGER", "No such document");
+                                Log.d(TAG, "No such document");
                             }
                         } else {
-                            Log.d("LOGGER", "get failed with ", task.getException());
+                            Log.d(TAG, "get failed with ", task.getException());
                         }
                     }
                 }
             });
 
         } else {
-            Log.d("SplashScreenActivity", "updateSharedPreferences: No user found");
+            Log.d(TAG, "updateSharedPreferences: No user found");
         }
     }
 }

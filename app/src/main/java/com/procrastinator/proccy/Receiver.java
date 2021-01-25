@@ -14,16 +14,17 @@ public class Receiver extends BroadcastReceiver {
     public static final String UPDATE_COUNTDOWN_TEXT = "com.procrastinator.proccy.UPDATE_COUNTDOWN_TEXT";
     public static final String UPDATE_BUTTONS = "com.procrastinator.proccy.UPDATE_BUTTONS";
     public static final String SEND_ON_FINISH = "com.procrastinator.proccy.SEND_ON_FINISH";
+    private static final String TAG = "ReceiverClass";
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
         if (RESET_DAILY_SCORE.equals(intent.getAction())){
+            Log.d(TAG, "updateDailyScore");
             updateDailyScore(context);
         }
     }
     public void updateDailyScore(Context context) {
-        Log.d("dailyScoreIsZero", "NULL NULL NULL");
         PreferencesConfig.removeDailyScoreFromPref(context);
     }
 }

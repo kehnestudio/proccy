@@ -55,12 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
-    public static int totalscore;
-    public static String displayname;
-    //FirebaseAuth mAuth;
-    //FirebaseUser user;
 
-    FirebaseFirestore db;
     BottomNavigationView bottomNavigationView;
 
     @Override
@@ -69,10 +64,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainactivity);
 
-        // mAuth = FirebaseAuth.getInstance();
-        //user = mAuth.getCurrentUser();
-
-        //updateNameAndScores();
         onNewIntent(getIntent());
         scheduleDailyScoreReset();
         setUpNavigation();
@@ -86,13 +77,6 @@ public class MainActivity extends AppCompatActivity {
                 .findFragmentById(R.id.nav_host_fragment_container);
         NavigationUI.setupWithNavController(bottomNavigationView,
                 navHostFragment.getNavController());
-    }
-
-    public void openFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.nav_host_fragment_container, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
     }
 
     @Override

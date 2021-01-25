@@ -28,7 +28,6 @@ public class DataHolder {
     public int getDailyScore(){
         return dailyscore;
     }
-
     public void setDailyScore(int dailyscore) {
         this.dailyscore = dailyscore;
     }

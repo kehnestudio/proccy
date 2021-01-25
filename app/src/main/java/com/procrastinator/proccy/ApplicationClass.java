@@ -21,10 +21,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ApplicationClass extends Application {
+    private static final String TAG = "ApplicationClass";
+
 
     public static final String CHANNEL_1_ID = "channel_1";
     public static final String CHANNEL_2_ID = "channel_2";
-    private static final String ApplicationClass = "ApplicationClass";
     public SharedPreferences sp;
 
     @Override
