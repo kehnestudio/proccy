@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,14 +119,12 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
     }
 
     public void updateUI() {
-        String dailyScoreText = getResources().getString(R.string.textview_score_daily);
-        String totalScoreText = getResources().getString(R.string.textview_score_total);
         scoreDaily = Utilities.getCurrentDayDailyScore();
         scoreTotal = DataHolder.getInstance().getTotalScore();
         displayName = DataHolder.getInstance().getDisplayName();
 
-        scoreTotalTextView.setText(totalScoreText + scoreTotal);
-        scoreDailyTextView.setText(dailyScoreText + scoreDaily);
-        displayNameTextView.setText("Willkommen, " + displayName);
+        scoreDailyTextView.setText(getResources().getString(R.string.textview_score_daily, scoreDaily));
+        scoreTotalTextView.setText(getResources().getString(R.string.textview_score_total,scoreTotal));
+        displayNameTextView.setText(getString(R.string.home_fragment_displayname, displayName));
     }
 }

@@ -1,23 +1,25 @@
 <resources>
     <string name="app_name" translatable="false">Procrastinator</string>
-    <string name="textview_initial_timer">start</string>
-    <string name="button_reset_timer">reset</string>
-    <string name="textview_timer_initial">5 minute timer</string>
-    <string name="button_overview">overview</string>
-    <string name="button_procrastinate">procrastinate</string>
-    <string name="button_reset_dailyscore">reset</string>
-    <string name="textview_score_daily">Daily score: </string>
-    <string name="textview_score_total">Total score: </string>
-    <string name="lying_down_or_sitting_in_a_comfortable_position">Lying down or sitting in a comfortable position?</string>
-    <string name="listening_to_music">Listening to music?</string>
-    <string name="is_it_quiet">Is it quiet?</string>
-    <string name="drinking_coffee_or_tea">Drinking coffee or tea?</string>
-    <string name="textview_minuten_timer">" minute timer"</string>
-    <string name="textview_start">Start</string>
-    <string name="timer_service_title">Proccy-Timer</string>
-    <string name="timer_service_front">"Only "</string>
-    <string name="timer_service_back">" minutes left"</string>
-    <string name="timer_service_message">"Less than a minute"</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_fragment_displayname">Welcome, %1$s</string>
+    <string name="goals_fragment_start_timer">start</string>
+    <string name="goals_fragment_reset_timer">reset</string>
+    <string name="goals_fragment_initial_time">5 minute timer</string>
+    <string name="goals_fragment_question_1">Lying down or sitting in a comfortable position?</string>
+    <string name="goals_fragment_question_2">Listening to music?</string>
+    <string name="goals_fragment_question_3">Is it quiet?</string>
+    <string name="goals_fragment_question_4">Drinking coffee or tea?</string>
+    <string name="goals_fragment_minute_timer">"%1$d minute timer"</string>
+    <string name="progress_fragment_reset_dailyscore">reset</string>
+    <string name="progress_fragment_progresscircle_text" translatable="false">%1$d %%</string>
+    <string name="textview_score_daily">Daily score: %1$d</string>
+    <string name="textview_score_total">Total score: %1$d</string>
+    <string name="timer_service_notification_title">Proccy-Timer</string>
+    <string name="timer_service_notification_message">"Only %1$d minutes left"</string>
+    <string name="timer_service_notification_message_2">"Less than a minute"</string>
+    <string name="home_fragment_sign_out">Log out</string>
+    <string name="bottom_navigation_home_button">Home</string>
+    <string name="bottom_navigation_goals_button">Proccy</string>
+    <string name="bottom_navigation_overview_button">Overview</string>
+
+
 </resources>

@@ -85,15 +85,13 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     }
 
     public void updateProgressBar() {
-        String dailyScoreText = getResources().getString(R.string.textview_score_daily);
-        String totalScoreText = getResources().getString(R.string.textview_score_total);
         scoreDaily = Utilities.getCurrentDayDailyScore();
         scoreTotal =  DataHolder.getInstance().getTotalScore();
 
-        scoreDailyTextView.setText(dailyScoreText + scoreDaily);
-        scoreTotalTextView.setText(totalScoreText + scoreTotal);
+        scoreDailyTextView.setText(getResources().getString(R.string.textview_score_daily, scoreDaily));
+        scoreTotalTextView.setText(getResources().getString(R.string.textview_score_total,scoreTotal));
 
-        progressText.setText(scoreDaily + " %");
+        progressText.setText(getResources().getString(R.string.progress_fragment_progresscircle_text,scoreDaily));
         progress.setProgress(scoreDaily);
     }
 

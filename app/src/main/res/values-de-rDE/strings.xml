@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="textview_initial_timer">start</string>
-    <string name="button_reset_timer">zurücksetzen</string>
-    <string name="textview_timer_initial">5 Minuten Timer</string>
-    <string name="button_overview">Übersicht</string>
-    <string name="button_procrastinate">prokrastinieren</string>
-    <string name="button_reset_dailyscore">zurücksetzen</string>
-    <string name="textview_score_daily">"Heute: "</string>
-    <string name="textview_score_total">"Gesamt: "</string>
-    <string name="lying_down_or_sitting_in_a_comfortable_position">Liegend oder sitzend?</string>
-    <string name="listening_to_music">Hörst du Musik?</string>
-    <string name="is_it_quiet">Ist es leise?</string>
-    <string name="drinking_coffee_or_tea">Trinkst du Kaffee/Tee?</string>
-    <string name="textview_minuten_timer">" Minuten Timer"</string>
-    <string name="textview_start">Start</string>
-    <string name="timer_service_front">"Noch "</string>
-    <string name="timer_service_back">" Minuten"</string>
-    <string name="timer_service_title">Proccy-Timer</string>
-    <string name="timer_service_message">Nur noch weniger als eine Minute</string>
+    <string name="goals_fragment_start_timer">start</string>
+    <string name="goals_fragment_reset_timer">zurücksetzen</string>
+    <string name="goals_fragment_initial_time">5 Minuten Timer</string>
+    <string name="progress_fragment_reset_dailyscore">zurücksetzen</string>
+    <string name="textview_score_daily">Heute: %1$d</string>
+    <string name="textview_score_total">Gesamt: %1$d</string>
+    <string name="goals_fragment_question_1">Liegend oder sitzend?</string>
+    <string name="goals_fragment_question_2">Hörst du Musik?</string>
+    <string name="goals_fragment_question_3">Ist es leise?</string>
+    <string name="goals_fragment_question_4">Trinkst du Kaffee/Tee?</string>
+    <string name="goals_fragment_minute_timer">%1$d Minuten Timer</string>
+    <string name="timer_service_notification_message">Noch %1$d Minuten</string>
+    <string name="timer_service_notification_title">Proccy-Timer</string>
+    <string name="timer_service_notification_message_2">Nur noch weniger als eine Minute</string>
+    <string name="home_fragment_displayname">Willkommen, %1$s</string>
+    <string name="home_fragment_sign_out">Abmelden</string>
+    <string name="bottom_navigation_home_button">Home</string>
+    <string name="bottom_navigation_goals_button">Proccy</string>
+    <string name="bottom_navigation_overview_button">Übersicht</string>
 </resources>

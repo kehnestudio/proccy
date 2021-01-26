@@ -97,7 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
-                android:text="@string/button_reset_dailyscore"
+                android:text="@string/progress_fragment_reset_dailyscore"
                 app:backgroundTint="@null"
                 app:layout_constraintTop_toBottomOf="@+id/cardView_progress_circle" />
 
@@ -106,7 +106,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
-                android:text="Set Dotspans on Calendar"
+                android:text="Set Dotspans on Calendar [TEST]"
                 app:backgroundTint="@null"
                 app:layout_constraintTop_toBottomOf="@+id/cardView_progress_circle" />
 
