@@ -1,6 +1,7 @@
 package com.procrastinator.proccy.Fragments;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,31 +12,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.procrastinator.proccy.CurrentDayDecorator;
 import com.procrastinator.proccy.DataHolder;
-import com.procrastinator.proccy.DotSpanDecorator;
-import com.procrastinator.proccy.MainActivity;
+import com.procrastinator.proccy.EventDecorator;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
+import com.procrastinator.proccy.Utilities;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+
+import java.util.List;
 
 public class Progress extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String ARG_PARAM1 = "daily score";
     private static final String ARG_PARAM2 = "total score";
+    private static final String TAG = "ProgressFragment";
     private int scoreDaily, scoreTotal;
     private ProgressBar progress;
     private TextView progressText, scoreDailyTextView, scoreTotalTextView;
-    private Button button_resetProgress;
+    private Button button_resetProgress, button_fireStore;
     private MaterialCalendarView calendarView;
-    int mParam1;
-    String mParam2;
 
     public Progress() {
         // Required empty public constructor
@@ -75,20 +75,10 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay_progress);
         button_resetProgress = getView().findViewById(R.id.resetButton);
         button_resetProgress.setOnClickListener(v -> resetDailyScore());
+        button_fireStore = getView().findViewById(R.id.setDotSpans);
+        button_fireStore.setOnClickListener(v -> addDecorator(DataHolder.getInstance().getCalendarDays()));
         calendarView = getView().findViewById(R.id.calendarView);
         calendarView.addDecorators(new CurrentDayDecorator(requireActivity()));
-
-        // https://stackoverflow.com/questions/50685231/materialcalendarview-dotspan-not-appearing
-        calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
-            @Override
-            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-
-                DotSpanDecorator eventDecorator= new DotSpanDecorator(date);
-                widget.addDecorator(eventDecorator);
-                widget.invalidateDecorators();
-
-            }
-        });
 
         updateProgressBar();
         super.onViewCreated(view, savedInstanceState);
@@ -97,7 +87,7 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     public void updateProgressBar() {
         String dailyScoreText = getResources().getString(R.string.textview_score_daily);
         String totalScoreText = getResources().getString(R.string.textview_score_total);
-        scoreDaily = DataHolder.getInstance().getDailyScore();
+        scoreDaily = Utilities.getCurrentDayDailyScore();
         scoreTotal =  DataHolder.getInstance().getTotalScore();
 
         scoreDailyTextView.setText(dailyScoreText + scoreDaily);
@@ -108,7 +98,7 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     }
 
     public void resetDailyScore() {
-        DataHolder.getInstance().setDailyScore(0);
+        scoreDaily = Utilities.getCurrentDayDailyScore();
         updateProgressBar();
     }
     @Override
@@ -117,4 +107,11 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
             updateProgressBar();
         }
     }
+
+    private void addDecorator(List<CalendarDay> calendarDays) {
+        EventDecorator dailyScoreDecorator = new EventDecorator(Color.RED, calendarDays);
+        calendarView.addDecorator(dailyScoreDecorator);
+        calendarView.invalidateDecorators();
+    }
+
 }

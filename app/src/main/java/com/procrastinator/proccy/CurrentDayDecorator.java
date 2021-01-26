@@ -2,6 +2,7 @@ package com.procrastinator.proccy;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 

@@ -26,6 +26,8 @@ import com.procrastinator.proccy.DataHolder;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
 import com.procrastinator.proccy.SignInActivity;
+import com.procrastinator.proccy.TimerService;
+import com.procrastinator.proccy.Utilities;
 
 public class Home extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -101,7 +103,8 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
                         FirebaseAuth.getInstance().signOut(); //signout firebase
                         Intent setupIntent = new Intent(requireActivity(), SignInActivity.class);
                         PreferencesConfig.clearAllPreferences(getActivity());
-                        Toast.makeText(requireActivity(), "Logged Out", Toast.LENGTH_LONG).show(); //if u want to show some text
+                        requireActivity().stopService(new Intent(getActivity(), TimerService.class));
+                        Toast.makeText(requireActivity(), "Logged Out", Toast.LENGTH_LONG).show();
                         setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(setupIntent);
                         requireActivity().finish();
@@ -119,10 +122,9 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
     public void updateUI() {
         String dailyScoreText = getResources().getString(R.string.textview_score_daily);
         String totalScoreText = getResources().getString(R.string.textview_score_total);
-        scoreDaily = DataHolder.getInstance().getDailyScore();
+        scoreDaily = Utilities.getCurrentDayDailyScore();
         scoreTotal = DataHolder.getInstance().getTotalScore();
         displayName = DataHolder.getInstance().getDisplayName();
-
 
         scoreTotalTextView.setText(totalScoreText + scoreTotal);
         scoreDailyTextView.setText(dailyScoreText + scoreDaily);
