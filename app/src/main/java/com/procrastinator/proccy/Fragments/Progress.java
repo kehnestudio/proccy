@@ -15,25 +15,15 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.procrastinator.proccy.CurrentDayDecorator;
-import com.procrastinator.proccy.DailyScore;
 import com.procrastinator.proccy.DataHolder;
 import com.procrastinator.proccy.EventDecorator;
 import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
+import com.procrastinator.proccy.Utilities;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Progress extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -46,12 +36,6 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     private TextView progressText, scoreDailyTextView, scoreTotalTextView;
     private Button button_resetProgress, button_fireStore;
     private MaterialCalendarView calendarView;
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private ArrayList<Integer> dailyscoresArrayList = new ArrayList<>();
-    private ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
-
 
     public Progress() {
         // Required empty public constructor
@@ -91,8 +75,8 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay_progress);
         button_resetProgress = getView().findViewById(R.id.resetButton);
         button_resetProgress.setOnClickListener(v -> resetDailyScore());
-        button_fireStore = getView().findViewById(R.id.firestoreButton);
-        button_fireStore.setOnClickListener(v -> loadDailyScores());
+        button_fireStore = getView().findViewById(R.id.setDotSpans);
+        button_fireStore.setOnClickListener(v -> addDecorator(DataHolder.getInstance().getCalendarDays()));
         calendarView = getView().findViewById(R.id.calendarView);
         calendarView.addDecorators(new CurrentDayDecorator(requireActivity()));
 
@@ -103,7 +87,7 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     public void updateProgressBar() {
         String dailyScoreText = getResources().getString(R.string.textview_score_daily);
         String totalScoreText = getResources().getString(R.string.textview_score_total);
-        scoreDaily = DataHolder.getInstance().getDailyScore();
+        scoreDaily = Utilities.getCurrentDayDailyScore();
         scoreTotal =  DataHolder.getInstance().getTotalScore();
 
         scoreDailyTextView.setText(dailyScoreText + scoreDaily);
@@ -114,7 +98,7 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
     }
 
     public void resetDailyScore() {
-        DataHolder.getInstance().setDailyScore(0);
+        scoreDaily = Utilities.getCurrentDayDailyScore();
         updateProgressBar();
     }
     @Override
@@ -122,31 +106,6 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
         if (key.equals(PreferencesConfig.PREF_DAILY_SCORE)) {
             updateProgressBar();
         }
-    }
-
-    private void loadDailyScores() {
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-        String uid = user.getUid();
-
-
-        CollectionReference scoreRef = db.collection("users").document(uid).collection("dailyScoreHistory");
-        scoreRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            DailyScore dailyScore = documentSnapshot.toObject(DailyScore.class);
-                            Timestamp timestamp = dailyScore.getDate();
-                            int dailyScoreFromFireStore = dailyScore.getScore();
-                            Date date = timestamp.toDate();
-                            CalendarDay calendarDay = CalendarDay.from(date);
-                            datesArrayList.add(calendarDay);
-                            dailyscoresArrayList.add(dailyScoreFromFireStore);
-                        }
-                        addDecorator(datesArrayList);
-                    }
-                });
     }
 
     private void addDecorator(List<CalendarDay> calendarDays) {

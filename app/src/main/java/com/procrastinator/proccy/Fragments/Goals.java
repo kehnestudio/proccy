@@ -40,6 +40,8 @@ import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
 import com.procrastinator.proccy.Receiver;
 import com.procrastinator.proccy.TimerService;
+import com.procrastinator.proccy.Utilities;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.net.HttpCookie;
 import java.time.LocalDate;
@@ -124,12 +126,10 @@ public class Goals extends Fragment {
         mButtonStartPause = getView().findViewById(R.id.button_start);
         mButtonReset = getView().findViewById(R.id.button_reset);
         mButtonRefresh = getView().findViewById(R.id.btn_refresh);
-
         mCheckbox1 = getView().findViewById(R.id.checkBox);
         mCheckbox2 = getView().findViewById(R.id.checkBox2);
         mCheckbox3 = getView().findViewById(R.id.checkBox3);
         mCheckbox4 = getView().findViewById(R.id.checkBox4);
-
         mSeekBarTimer = getView().findViewById(R.id.seekBar_timer);
 
         mButtonRefresh.setOnClickListener(new View.OnClickListener() {
@@ -278,7 +278,7 @@ public class Goals extends Fragment {
 
     private void updateScore() {
         mScoreTotal = DataHolder.getInstance().getTotalScore();
-        mScoreDaily = DataHolder.getInstance().getDailyScore();
+        mScoreDaily = Utilities.getCurrentDayDailyScore();
         mScoreTemporary = PreferencesConfig.loadTempScore(requireActivity());
 
         mScoreDaily += mScoreTemporary;
@@ -290,7 +290,7 @@ public class Goals extends Fragment {
 
         PreferencesConfig.removeTempScore(requireActivity());
         DataHolder.getInstance().setTotalScore(mScoreTotal);
-        DataHolder.getInstance().setDailyScore(mScoreDaily);
+        //DataHolder.getInstance().setDailyScore(mScoreDaily);
         writeUserData(mScoreTotal);
     }
 
@@ -339,19 +339,6 @@ public class Goals extends Fragment {
         }
     }
 
-    static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
-    public Date getDateFromString(String datetoSaved) {
-
-        try {
-            Date date = format.parse(datetoSaved);
-            return date;
-        } catch (ParseException | java.text.ParseException e) {
-            return null;
-        }
-
-    }
-
     private void writeUserData(int totalscore) {
         FirebaseAuth mAuth;
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -362,7 +349,7 @@ public class Goals extends Fragment {
         userMap.put("totalscore", totalscore);
         db.collection("users").document(uid).set(userMap, SetOptions.merge());
 
-        Date currentDate = getDateWithoutTimeUsingCalendar();
+        Date currentDate = Utilities.getDateWithoutTimeUsingCalendar();
         String currentDayWithoutTime = getLocalDate().toString();
 
         Map<String, Object> newDailyScore = new HashMap<>();
@@ -371,16 +358,11 @@ public class Goals extends Fragment {
 
         DocumentReference addedDocRef = db.collection("users").document(uid);
         addedDocRef.collection("dailyScoreHistory").document(currentDayWithoutTime).set(newDailyScore, SetOptions.merge());
-    }
 
-    public static Date getDateWithoutTimeUsingCalendar() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        return calendar.getTime();
+        //Write into DataHolder class
+        HashMap<CalendarDay, Integer> temporaryHashmap = DataHolder.getInstance().getDailyScoreHashMap();
+        temporaryHashmap.put(Utilities.getCurrentCalendarDay(), mScoreDaily);
+        DataHolder.getInstance().setDailyScoreHashMap(temporaryHashmap);
     }
 
     public static LocalDate getLocalDate() {
@@ -447,6 +429,4 @@ public class Goals extends Fragment {
     public void stopService() {
         requireActivity().stopService(new Intent(getActivity(), TimerService.class));
     }
-
-
 }

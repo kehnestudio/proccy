@@ -1,9 +1,17 @@
 package com.procrastinator.proccy;
 
+import com.google.firebase.Timestamp;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+
+import java.util.HashMap;
+import java.util.List;
+
 public class DataHolder {
 
-    private int totalscore, dailyscore;
+    private int totalscore;
     private String displayName;
+    private HashMap<CalendarDay, Integer> dailyScoreHashMap;
+    private  List<CalendarDay> calendarDays;
 
     private static final DataHolder instance = new DataHolder();
 
@@ -25,12 +33,19 @@ public class DataHolder {
         this.totalscore = totalscore;
     }
 
-    public int getDailyScore(){
-        return dailyscore;
+    public HashMap<CalendarDay, Integer> getDailyScoreHashMap(){
+        return dailyScoreHashMap;
     }
-    public void setDailyScore(int dailyscore) {
-        this.dailyscore = dailyscore;
+    public void setDailyScoreHashMap(HashMap<CalendarDay,Integer> dailyScoreHashMap) {
+        this.dailyScoreHashMap = dailyScoreHashMap;
     }
+    public List<CalendarDay> getCalendarDays(){
+        return calendarDays;
+    }
+    public void setCalendarDays(List<CalendarDay> calendarDays) {
+        this.calendarDays = calendarDays;
+    }
+
 }
 
 

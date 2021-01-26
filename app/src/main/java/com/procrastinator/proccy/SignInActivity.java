@@ -18,18 +18,27 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -130,6 +139,7 @@ public class SignInActivity extends AppCompatActivity {
             String uid = user.getUid();
             String displayname = user.getDisplayName();
             DataHolder.getInstance().setDisplayName(displayname);
+
             DocumentReference docRef = db.collection("users").document(uid);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -140,8 +150,7 @@ public class SignInActivity extends AppCompatActivity {
                             if (document.getLong("totalscore") != null) {
                                 DataHolder.getInstance().setTotalScore(document.getLong("totalscore").intValue());
                                 Log.d(TAG, "Set totalscore to: " + DataHolder.getInstance().getTotalScore());
-                                Intent mainscreenIntent = new Intent(getApplicationContext(), MainActivity.class);
-                                startActivity(mainscreenIntent);
+                                loadDailyScores();
                             } else {
                                 Log.d(TAG, "No such document");
                             }
@@ -157,25 +166,46 @@ public class SignInActivity extends AppCompatActivity {
         }
     }
 
+    private void loadDailyScores() {
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        String uid = user.getUid();
+
+        CollectionReference scoreRef = db.collection("users").document(uid).collection("dailyScoreHistory");
+        scoreRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
+                HashMap<CalendarDay, Integer> history = new HashMap();
+
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    DailyScore dailyScore = documentSnapshot.toObject(DailyScore.class);
+                    Timestamp timestamp = dailyScore.getDate();
+                    int dailyScoreFromFireStore = dailyScore.getScore();
+                    Date date = timestamp.toDate();
+                    CalendarDay calendarDay = CalendarDay.from(date);
+
+                    datesArrayList.add(calendarDay);
+                    history.put(calendarDay, dailyScoreFromFireStore);
+
+                }
+                DataHolder.getInstance().setDailyScoreHashMap(history);
+                DataHolder.getInstance().setCalendarDays(datesArrayList);
+                openMainActivity();
+            }
+        });
+    }
+
+    private void openMainActivity(){
+        Intent mainscreenIntent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(mainscreenIntent);
+    }
+
     private void checkUserDataOnLogin(String userId, String name) {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("username", name);
         userMap.put("userid", userId);
         db.collection("users").document(userId).set(userMap, SetOptions.merge());
     }
-
-    private void updateUI(FirebaseUser firebaseUser) {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if (account != null) {
-            String personName = account.getDisplayName();
-            //String personGivenName = account.getGivenName();
-            //String personFamilyName = account.getFamilyName();
-            String personEmail = account.getEmail();
-            String personID = account.getId();
-            Uri personPhoto = account.getPhotoUrl();
-            Toast.makeText(SignInActivity.this, personName + "  " + personEmail + " " + personID, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
 }

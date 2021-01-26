@@ -102,11 +102,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardView_progress_circle" />
 
             <Button
-                android:id="@+id/firestoreButton"
+                android:id="@+id/setDotSpans"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_button_1"
-                android:text="Firebase getAll"
+                android:text="Set Dotspans on Calendar"
                 app:backgroundTint="@null"
                 app:layout_constraintTop_toBottomOf="@+id/cardView_progress_circle" />
 
