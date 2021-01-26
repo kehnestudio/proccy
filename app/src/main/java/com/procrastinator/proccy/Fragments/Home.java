@@ -3,11 +3,6 @@ package com.procrastinator.proccy.Fragments;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +10,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.procrastinator.proccy.DataHolder;
 import com.procrastinator.proccy.PreferencesConfig;
@@ -77,12 +74,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
 
         updateUI();
 
-        signOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendToLogin();
-            }
-        });
+        signOutButton.setOnClickListener(v -> sendToLogin());
 
 
         super.onViewCreated(view, savedInstanceState);
@@ -95,19 +87,17 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(requireContext(), gso);
+        //signout Google
         mGoogleSignInClient.signOut().addOnCompleteListener(requireActivity(),
-                new OnCompleteListener<Void>() {  //signout Google
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        FirebaseAuth.getInstance().signOut(); //signout firebase
-                        Intent setupIntent = new Intent(requireActivity(), SignInActivity.class);
-                        PreferencesConfig.clearAllPreferences(getActivity());
-                        requireActivity().stopService(new Intent(getActivity(), TimerService.class));
-                        Toast.makeText(requireActivity(), "Logged Out", Toast.LENGTH_LONG).show();
-                        setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(setupIntent);
-                        requireActivity().finish();
-                    }
+                task -> {
+                    FirebaseAuth.getInstance().signOut(); //signout firebase
+                    Intent setupIntent = new Intent(requireActivity(), SignInActivity.class);
+                    PreferencesConfig.clearAllPreferences(getActivity());
+                    requireActivity().stopService(new Intent(getActivity(), TimerService.class));
+                    Toast.makeText(requireActivity(), "Logged Out", Toast.LENGTH_LONG).show();
+                    setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(setupIntent);
+                    requireActivity().finish();
                 });
     }
 

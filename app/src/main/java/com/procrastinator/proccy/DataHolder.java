@@ -1,6 +1,5 @@
 package com.procrastinator.proccy;
 
-import com.google.firebase.Timestamp;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.util.HashMap;

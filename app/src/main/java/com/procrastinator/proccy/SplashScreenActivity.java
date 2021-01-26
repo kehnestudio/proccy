@@ -1,19 +1,12 @@
 package com.procrastinator.proccy;
 
-import androidx.annotation.NonNull;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.ContactsContract;
-import android.util.Log;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,7 +15,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.util.ArrayList;
@@ -65,22 +57,19 @@ public class SplashScreenActivity extends AppCompatActivity {
             String displayname = user.getDisplayName();
             DataHolder.getInstance().setDisplayName(displayname);
             DocumentReference docRef = db.collection("users").document(uid);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            if (document.getLong("totalscore") != null) {
-                                DataHolder.getInstance().setTotalScore(document.getLong("totalscore").intValue());
-                                Log.d(TAG, "Set totalscore to: " + DataHolder.getInstance().getTotalScore());
-                                loadDailyScores();
-                            } else {
-                                Log.d(TAG, "No such document");
-                            }
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        if (document.getLong("totalscore") != null) {
+                            DataHolder.getInstance().setTotalScore(document.getLong("totalscore").intValue());
+                            Log.d(TAG, "Set totalscore to: " + DataHolder.getInstance().getTotalScore());
+                            loadDailyScores();
                         } else {
-                            Log.d(TAG, "get failed with ", task.getException());
+                            Log.d(TAG, "No such document");
                         }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
                     }
                 }
             });
@@ -96,28 +85,25 @@ public class SplashScreenActivity extends AppCompatActivity {
         String uid = user.getUid();
 
         CollectionReference scoreRef = db.collection("users").document(uid).collection("dailyScoreHistory");
-        scoreRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+        scoreRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
 
-                ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
-                HashMap<CalendarDay, Integer> history = new HashMap();
+            ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
+            HashMap<CalendarDay, Integer> history = new HashMap<>();
 
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    DailyScore dailyScore = documentSnapshot.toObject(DailyScore.class);
-                    Timestamp timestamp = dailyScore.getDate();
-                    int dailyScoreFromFireStore = dailyScore.getScore();
-                    Date date = timestamp.toDate();
-                    CalendarDay calendarDay = CalendarDay.from(date);
+            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                DailyScore dailyScore = documentSnapshot.toObject(DailyScore.class);
+                Timestamp timestamp = dailyScore.getDate();
+                int dailyScoreFromFireStore = dailyScore.getScore();
+                Date date = timestamp.toDate();
+                CalendarDay calendarDay = CalendarDay.from(date);
 
-                    datesArrayList.add(calendarDay);
-                    history.put(calendarDay, dailyScoreFromFireStore);
+                datesArrayList.add(calendarDay);
+                history.put(calendarDay, dailyScoreFromFireStore);
 
-                }
-                DataHolder.getInstance().setDailyScoreHashMap(history);
-                DataHolder.getInstance().setCalendarDays(datesArrayList);
-                openMainActivity();
             }
+            DataHolder.getInstance().setDailyScoreHashMap(history);
+            DataHolder.getInstance().setCalendarDays(datesArrayList);
+            openMainActivity();
         });
     }
 

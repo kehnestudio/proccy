@@ -4,15 +4,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.icu.text.SimpleDateFormat;
-import android.net.ParseException;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.work.Data;
-
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +15,10 @@ import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -43,18 +38,14 @@ import com.procrastinator.proccy.TimerService;
 import com.procrastinator.proccy.Utilities;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
-import java.net.HttpCookie;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import static com.procrastinator.proccy.Receiver.SEND_ON_FINISH;
 import static com.procrastinator.proccy.Receiver.UPDATE_BUTTONS;
@@ -132,16 +123,9 @@ public class Goals extends Fragment {
         mCheckbox4 = getView().findViewById(R.id.checkBox4);
         mSeekBarTimer = getView().findViewById(R.id.seekBar_timer);
 
-        mButtonRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeCheckBox();
-            }
-        });
+        mButtonRefresh.setOnClickListener(v -> changeCheckBox());
 
-        mButtonStartPause.setOnClickListener(v -> {
-            startTimer();
-        });
+        mButtonStartPause.setOnClickListener(v -> startTimer());
 
         mButtonReset.setOnClickListener(v -> resetTimer());
 

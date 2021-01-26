@@ -12,7 +12,6 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-
 import static com.procrastinator.proccy.ApplicationClass.CHANNEL_2_ID;
 import static com.procrastinator.proccy.Receiver.SEND_ON_FINISH;
 import static com.procrastinator.proccy.Receiver.UPDATE_BUTTONS;
@@ -28,7 +27,7 @@ public class TimerService extends Service {
     public static final String TIME_LEFT_IN_MILLIS = "com.procrastinator.TIME_LEFT_IN_MILLIS";
     public static final String TIMER_RUNNING = "com.procrastinator.TIMER_RUNNING";
 
-    private String title, textFront, textBack;
+    private String title, textFront;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -112,8 +111,7 @@ public class TimerService extends Service {
     }
 
     public int getTimeLeftInMinutes() {
-        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
-        return minutes;
+        return (int) (mTimeLeftInMillis / 1000) / 60;
     }
 
     public void sendUpdateBroadcast() {

@@ -1,15 +1,12 @@
 package com.procrastinator.proccy;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -17,12 +14,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -31,11 +25,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.firestore.WriteBatch;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,12 +55,7 @@ public class SignInActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         createLoginRequest();
 
-        btnSignIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
+        btnSignIn.setOnClickListener(v -> signIn());
     }
 
     private void createLoginRequest() {
@@ -114,19 +100,16 @@ public class SignInActivity extends AppCompatActivity {
     // exchange it for a Firebase credential, and authenticate with Firebase using the Firebase credential:
     private void firebaseGoogleAuth(GoogleSignInAccount account) {
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-        mAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    user = mAuth.getCurrentUser();
-                    Toast.makeText(SignInActivity.this, "Successful", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "signInWithCredential:success");
-                    checkUserDataOnLogin(user.getUid(), user.getDisplayName());
-                    updateNameAndScores();
-                } else {
-                    Toast.makeText(SignInActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                    Log.w(TAG, "signInWithCredential:failure", task.getException());
-                }
+        mAuth.signInWithCredential(authCredential).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                user = mAuth.getCurrentUser();
+                Toast.makeText(SignInActivity.this, "Successful", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "signInWithCredential:success");
+                checkUserDataOnLogin(user.getUid(), user.getDisplayName());
+                updateNameAndScores();
+            } else {
+                Toast.makeText(SignInActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "signInWithCredential:failure", task.getException());
             }
         });
     }
@@ -141,22 +124,19 @@ public class SignInActivity extends AppCompatActivity {
             DataHolder.getInstance().setDisplayName(displayname);
 
             DocumentReference docRef = db.collection("users").document(uid);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document != null) {
-                            if (document.getLong("totalscore") != null) {
-                                DataHolder.getInstance().setTotalScore(document.getLong("totalscore").intValue());
-                                Log.d(TAG, "Set totalscore to: " + DataHolder.getInstance().getTotalScore());
-                                loadDailyScores();
-                            } else {
-                                Log.d(TAG, "No such document");
-                            }
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null) {
+                        if (document.getLong("totalscore") != null) {
+                            DataHolder.getInstance().setTotalScore(document.getLong("totalscore").intValue());
+                            Log.d(TAG, "Set totalscore to: " + DataHolder.getInstance().getTotalScore());
+                            loadDailyScores();
                         } else {
-                            Log.d(TAG, "get failed with ", task.getException());
+                            Log.d(TAG, "No such document");
                         }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
                     }
                 }
             });
@@ -172,28 +152,25 @@ public class SignInActivity extends AppCompatActivity {
         String uid = user.getUid();
 
         CollectionReference scoreRef = db.collection("users").document(uid).collection("dailyScoreHistory");
-        scoreRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+        scoreRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
 
-                ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
-                HashMap<CalendarDay, Integer> history = new HashMap();
+            ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
+            HashMap<CalendarDay, Integer> history = new HashMap();
 
-                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                    DailyScore dailyScore = documentSnapshot.toObject(DailyScore.class);
-                    Timestamp timestamp = dailyScore.getDate();
-                    int dailyScoreFromFireStore = dailyScore.getScore();
-                    Date date = timestamp.toDate();
-                    CalendarDay calendarDay = CalendarDay.from(date);
+            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                DailyScore dailyScore = documentSnapshot.toObject(DailyScore.class);
+                Timestamp timestamp = dailyScore.getDate();
+                int dailyScoreFromFireStore = dailyScore.getScore();
+                Date date = timestamp.toDate();
+                CalendarDay calendarDay = CalendarDay.from(date);
 
-                    datesArrayList.add(calendarDay);
-                    history.put(calendarDay, dailyScoreFromFireStore);
+                datesArrayList.add(calendarDay);
+                history.put(calendarDay, dailyScoreFromFireStore);
 
-                }
-                DataHolder.getInstance().setDailyScoreHashMap(history);
-                DataHolder.getInstance().setCalendarDays(datesArrayList);
-                openMainActivity();
             }
+            DataHolder.getInstance().setDailyScoreHashMap(history);
+            DataHolder.getInstance().setCalendarDays(datesArrayList);
+            openMainActivity();
         });
     }
 

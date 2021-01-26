@@ -1,13 +1,9 @@
 package com.procrastinator.proccy;
 
-import android.content.Intent;
-import android.provider.ContactsContract;
-
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 public class Utilities {
 
@@ -24,8 +20,7 @@ public class Utilities {
     }
 
     public static CalendarDay getCurrentCalendarDay(){
-        CalendarDay today = CalendarDay.today();
-        return today;
+        return CalendarDay.today();
     }
 
     public static int getCurrentDayDailyScore(){
