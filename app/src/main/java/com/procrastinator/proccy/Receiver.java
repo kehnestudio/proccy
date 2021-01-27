@@ -4,9 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
-
-import static com.procrastinator.proccy.TimerService.TIME_LEFT_IN_MILLIS;
 
 public class Receiver extends BroadcastReceiver {
 

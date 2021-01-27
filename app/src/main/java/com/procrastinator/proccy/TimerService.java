@@ -8,13 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-
-import static android.content.ContentValues.TAG;
 import static com.procrastinator.proccy.ApplicationClass.CHANNEL_2_ID;
 import static com.procrastinator.proccy.Receiver.SEND_ON_FINISH;
 import static com.procrastinator.proccy.Receiver.UPDATE_BUTTONS;
@@ -30,16 +27,15 @@ public class TimerService extends Service {
     public static final String TIME_LEFT_IN_MILLIS = "com.procrastinator.TIME_LEFT_IN_MILLIS";
     public static final String TIMER_RUNNING = "com.procrastinator.TIMER_RUNNING";
 
-    private String title, textFront, textBack;
+    private String title, textFront;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mTimeLeftInMillis = intent.getLongExtra("inputExtra", 3000);
         mTimerRunning = PreferencesConfig.loadTimerRunning(this);
 
-        title = getString(R.string.timer_service_title);
-        textFront = getString(R.string.timer_service_front);
-        textBack = getString(R.string.timer_service_back);
+        title = getString(R.string.timer_service_notification_title);
+        textFront = getString(R.string.timer_service_notification_message, getTimeLeftInMinutes());
 
         if (!mTimerRunning) {
             Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -47,8 +43,8 @@ public class TimerService extends Service {
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
             Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
-                    .setContentTitle(getString(R.string.timer_service_title))
-                    .setContentText(getString(R.string.timer_service_front) + getTimeLeftInMinutes() + getString(R.string.timer_service_back))
+                    .setContentTitle(getString(R.string.timer_service_notification_title))
+                    .setContentText(textFront)
                     .setSmallIcon(R.drawable.ic_sloth_svg)
                     .setContentIntent(pendingIntent)
                     .setShowWhen(false)
@@ -63,10 +59,10 @@ public class TimerService extends Service {
 
     private void updateNotification() {
         int minutes = getTimeLeftInMinutes();
-        String message = textFront + minutes + textBack;
+        String message = getString(R.string.timer_service_notification_message, minutes);
 
         if (minutes == 0) {
-            message = getString(R.string.timer_service_message);
+            message = getString(R.string.timer_service_notification_message_2);
         }
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -115,8 +111,7 @@ public class TimerService extends Service {
     }
 
     public int getTimeLeftInMinutes() {
-        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
-        return minutes;
+        return (int) (mTimeLeftInMillis / 1000) / 60;
     }
 
     public void sendUpdateBroadcast() {
