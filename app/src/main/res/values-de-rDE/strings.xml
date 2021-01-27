@@ -19,4 +19,5 @@
     <string name="bottom_navigation_home_button">Home</string>
     <string name="bottom_navigation_goals_button">Proccy</string>
     <string name="bottom_navigation_overview_button">Übersicht</string>
+    <string name="progress_fragment_display_date">Heute</string>
 </resources>

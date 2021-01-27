@@ -1,12 +1,10 @@
 package com.procrastinator.proccy.Fragments;
 
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -17,23 +15,22 @@ import androidx.fragment.app.Fragment;
 import com.procrastinator.proccy.CurrentDayDecorator;
 import com.procrastinator.proccy.DataHolder;
 import com.procrastinator.proccy.EventDecorator;
-import com.procrastinator.proccy.PreferencesConfig;
 import com.procrastinator.proccy.R;
 import com.procrastinator.proccy.Utilities;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
+import java.text.DateFormat;
 import java.util.List;
 
-public class Progress extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class Progress extends Fragment {
 
     private static final String ARG_PARAM1 = "daily score";
     private static final String ARG_PARAM2 = "total score";
     private static final String TAG = "ProgressFragment";
     private int scoreDaily, scoreTotal;
     private ProgressBar progress;
-    private TextView progressText, scoreDailyTextView, scoreTotalTextView;
-    private Button button_resetProgress, button_fireStore;
+    private TextView progressTextView, scoreDailyTextView, scoreTotalTextView, displayDayTextView;
     private MaterialCalendarView calendarView;
 
     public Progress() {
@@ -65,43 +62,47 @@ public class Progress extends Fragment implements SharedPreferences.OnSharedPref
         return inflater.inflate(R.layout.fragment_progress, container, false);
     }
 
+
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         progress = getView().findViewById(R.id.progress_bar);
-        progressText = getView().findViewById(R.id.text_view_progress);
+        progressTextView = getView().findViewById(R.id.text_view_progress);
+        displayDayTextView = getView().findViewById(R.id.textview_displayday);
         scoreDailyTextView = getView().findViewById(R.id.dailyScoreDisplay_progress);
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay_progress);
-        button_resetProgress = getView().findViewById(R.id.resetButton);
-        button_resetProgress.setOnClickListener(v -> resetDailyScore());
-        button_fireStore = getView().findViewById(R.id.setDotSpans);
-        button_fireStore.setOnClickListener(v -> addDecorator(DataHolder.getInstance().getCalendarDays()));
         calendarView = getView().findViewById(R.id.calendarView);
         calendarView.addDecorators(new CurrentDayDecorator(requireActivity()));
 
-        updateProgressBar();
-        super.onViewCreated(view, savedInstanceState);
+        calendarView.setOnDateChangedListener((widget, date, selected) -> {
+            setSelectedDailyScore(date);
+        });
+
+        addDecorator(DataHolder.getInstance().getCalendarDays());
+        setCurrentDailyAndTotalScore();
+
     }
 
-    public void updateProgressBar() {
-        scoreDaily = Utilities.getCurrentDayDailyScore();
+    private void setCurrentDailyAndTotalScore(){
         scoreTotal =  DataHolder.getInstance().getTotalScore();
-
-        scoreDailyTextView.setText(getResources().getString(R.string.textview_score_daily, scoreDaily));
+        scoreDaily = Utilities.getCurrentDayDailyScore();
         scoreTotalTextView.setText(getResources().getString(R.string.textview_score_total,scoreTotal));
-
-        progressText.setText(getResources().getString(R.string.progress_fragment_progresscircle_text,scoreDaily));
+        scoreDailyTextView.setText(getResources().getString(R.string.textview_score_daily, scoreDaily));
+        progressTextView.setText(getResources().getString(R.string.progress_fragment_progresscircle_text,scoreDaily));
         progress.setProgress(scoreDaily);
     }
 
-    public void resetDailyScore() {
-        scoreDaily = Utilities.getCurrentDayDailyScore();
-        updateProgressBar();
-    }
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(PreferencesConfig.PREF_DAILY_SCORE)) {
-            updateProgressBar();
+    private void setSelectedDailyScore(CalendarDay date){
+        int score = Utilities.getSelectedDayDailyScore(date);
+        progressTextView.setText(getResources().getString(R.string.progress_fragment_progresscircle_text, score));
+        progress.setProgress(score, true);
+        if (date.equals(CalendarDay.today())){
+            displayDayTextView.setText(R.string.progress_fragment_display_date);
+        }else {
+            //Formats CalendarDay into Date then Formats into Locale DateFormat.
+            displayDayTextView.setText(DateFormat.getDateInstance().format(date.getDate()));
         }
     }
 

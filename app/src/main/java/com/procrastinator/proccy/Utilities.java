@@ -32,4 +32,15 @@ public class Utilities {
         }
         return dailyscore;
     }
+
+    public static int getSelectedDayDailyScore(CalendarDay calendarDay){
+        int dailyscore;
+        if (DataHolder.getInstance().getDailyScoreHashMap().containsKey(calendarDay)) {
+            dailyscore = DataHolder.getInstance().getDailyScoreHashMap().get(calendarDay);
+        } else {
+            dailyscore = 0;
+        }
+        return dailyscore;
+    }
+
 }
