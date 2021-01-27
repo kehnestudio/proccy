@@ -24,6 +24,9 @@ import com.procrastinator.proccy.R;
 import com.procrastinator.proccy.SignInActivity;
 import com.procrastinator.proccy.TimerService;
 import com.procrastinator.proccy.Utilities;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Home extends Fragment implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -33,6 +36,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
     private Button signOutButton;
     private int scoreDaily, scoreTotal;
     private String displayName;
+    private CircleImageView profilePictureImageView;
 
     public Home() {
         // Required empty public constructor
@@ -71,7 +75,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
         scoreDailyTextView = getView().findViewById(R.id.dailyScoreDisplay);
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay);
         signOutButton = getView().findViewById(R.id.button_sign_out);
-
+        profilePictureImageView = getView().findViewById(R.id.imageView_profile_picture);
         updateUI();
 
         signOutButton.setOnClickListener(v -> sendToLogin());
@@ -92,8 +96,8 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
                 task -> {
                     FirebaseAuth.getInstance().signOut(); //signout firebase
                     Intent setupIntent = new Intent(requireActivity(), SignInActivity.class);
-                    PreferencesConfig.clearAllPreferences(getActivity());
-                    requireActivity().stopService(new Intent(getActivity(), TimerService.class));
+                    PreferencesConfig.clearAllPreferences(requireActivity());
+                    requireActivity().stopService(new Intent(requireActivity(), TimerService.class));
                     Toast.makeText(requireActivity(), "Logged Out", Toast.LENGTH_LONG).show();
                     setupIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(setupIntent);
@@ -112,6 +116,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
         scoreDaily = Utilities.getCurrentDayDailyScore();
         scoreTotal = DataHolder.getInstance().getTotalScore();
         displayName = DataHolder.getInstance().getDisplayName();
+        Picasso.get().load(DataHolder.getInstance().getUri()).placeholder(R.drawable.ic_sloth_svg).into(profilePictureImageView);
 
         scoreDailyTextView.setText(getResources().getString(R.string.textview_score_daily, scoreDaily));
         scoreTotalTextView.setText(getResources().getString(R.string.textview_score_total,scoreTotal));
