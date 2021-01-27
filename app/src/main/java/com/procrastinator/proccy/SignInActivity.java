@@ -1,6 +1,7 @@
 package com.procrastinator.proccy;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -120,8 +121,10 @@ public class SignInActivity extends AppCompatActivity {
 
         if (user != null) {
             String uid = user.getUid();
+            Uri uri = user.getPhotoUrl();
             String displayname = user.getDisplayName();
             DataHolder.getInstance().setDisplayName(displayname);
+            DataHolder.getInstance().setUri(uri);
 
             DocumentReference docRef = db.collection("users").document(uid);
             docRef.get().addOnCompleteListener(task -> {
@@ -155,7 +158,7 @@ public class SignInActivity extends AppCompatActivity {
         scoreRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
 
             ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
-            HashMap<CalendarDay, Integer> history = new HashMap();
+            HashMap<CalendarDay, Integer> history = new HashMap<>();
 
             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                 DailyScore dailyScore = documentSnapshot.toObject(DailyScore.class);

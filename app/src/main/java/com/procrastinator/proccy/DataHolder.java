@@ -1,5 +1,7 @@
 package com.procrastinator.proccy;
 
+import android.net.Uri;
+
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.util.HashMap;
@@ -11,6 +13,7 @@ public class DataHolder {
     private String displayName;
     private HashMap<CalendarDay, Integer> dailyScoreHashMap;
     private  List<CalendarDay> calendarDays;
+    private Uri uri;
 
     private static final DataHolder instance = new DataHolder();
 
@@ -44,6 +47,9 @@ public class DataHolder {
     public void setCalendarDays(List<CalendarDay> calendarDays) {
         this.calendarDays = calendarDays;
     }
+
+    public Uri getUri() {return uri;}
+    public void setUri(Uri uri){this.uri = uri;}
 
 }
 

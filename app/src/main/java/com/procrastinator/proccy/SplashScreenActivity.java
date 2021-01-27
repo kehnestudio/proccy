@@ -1,6 +1,7 @@
 package com.procrastinator.proccy;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -54,8 +55,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         if (user != null) {
             String uid = user.getUid();
+            Uri uri = user.getPhotoUrl();
             String displayname = user.getDisplayName();
             DataHolder.getInstance().setDisplayName(displayname);
+            DataHolder.getInstance().setUri(uri);
             DocumentReference docRef = db.collection("users").document(uid);
             docRef.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
