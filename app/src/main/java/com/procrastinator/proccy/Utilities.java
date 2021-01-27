@@ -1,5 +1,7 @@
 package com.procrastinator.proccy;
 
+import android.util.Log;
+
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.util.Calendar;
@@ -7,6 +9,7 @@ import java.util.Date;
 
 public class Utilities {
 
+    private static final String TAG = "UTILITIES" ;
     private int newDailyScore;
 
     public static Date getDateWithoutTimeUsingCalendar() {
@@ -24,23 +27,32 @@ public class Utilities {
     }
 
     public static int getCurrentDayDailyScore(){
-        int dailyscore;
-        if (DataHolder.getInstance().getDailyScoreHashMap().containsKey(getCurrentCalendarDay())) {
-            dailyscore = DataHolder.getInstance().getDailyScoreHashMap().get(getCurrentCalendarDay());
+        int dailyscore = 0;
+        if(DataHolder.getInstance().getDailyScoreHashMap()!=null) {
+            if (DataHolder.getInstance().getDailyScoreHashMap().containsKey(getCurrentCalendarDay())) {
+                dailyscore = DataHolder.getInstance().getDailyScoreHashMap().get(getCurrentCalendarDay());
+            } else {
+                dailyscore = 0;
+            }
+            return dailyscore;
         } else {
-            dailyscore = 0;
+            Log.d(TAG, "getSelectedDayDailyScore: No DailyScoreHashMap found");
+            return dailyscore;
         }
-        return dailyscore;
     }
 
     public static int getSelectedDayDailyScore(CalendarDay calendarDay){
-        int dailyscore;
-        if (DataHolder.getInstance().getDailyScoreHashMap().containsKey(calendarDay)) {
-            dailyscore = DataHolder.getInstance().getDailyScoreHashMap().get(calendarDay);
+        int dailyscore = 0;
+        if(DataHolder.getInstance().getDailyScoreHashMap()!=null) {
+            if (DataHolder.getInstance().getDailyScoreHashMap().containsKey(calendarDay)) {
+                dailyscore = DataHolder.getInstance().getDailyScoreHashMap().get(calendarDay);
+            } else {
+                dailyscore = 0;
+            }
+            return dailyscore;
         } else {
-            dailyscore = 0;
+            Log.d(TAG, "getSelectedDayDailyScore: No DailyScoreHashMap found");
+            return dailyscore;
         }
-        return dailyscore;
+        }
     }
-
-}

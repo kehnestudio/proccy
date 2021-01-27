@@ -70,6 +70,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                             loadDailyScores();
                         } else {
                             Log.d(TAG, "No such document");
+                            DataHolder.getInstance().setTotalScore(0);
+                            openMainActivity();
                         }
                     } else {
                         Log.d(TAG, "get failed with ", task.getException());

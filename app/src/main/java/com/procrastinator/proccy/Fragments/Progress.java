@@ -80,7 +80,10 @@ public class Progress extends Fragment {
             setSelectedDailyScore(date);
         });
 
-        addDecorator(DataHolder.getInstance().getCalendarDays());
+        if(DataHolder.getInstance().getCalendarDays()!=null){
+            addDecorator(DataHolder.getInstance().getCalendarDays());
+        }
+
         setCurrentDailyAndTotalScore();
 
     }

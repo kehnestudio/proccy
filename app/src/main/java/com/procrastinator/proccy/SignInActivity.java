@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +16,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthCredential;
@@ -107,7 +109,6 @@ public class SignInActivity extends AppCompatActivity {
                 Toast.makeText(SignInActivity.this, "Successful", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "signInWithCredential:success");
                 checkUserDataOnLogin(user.getUid(), user.getDisplayName());
-                updateNameAndScores();
             } else {
                 Toast.makeText(SignInActivity.this, "Failed", Toast.LENGTH_SHORT).show();
                 Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -137,6 +138,15 @@ public class SignInActivity extends AppCompatActivity {
                             loadDailyScores();
                         } else {
                             Log.d(TAG, "No such document");
+                            ArrayList<CalendarDay> datesArrayList = new ArrayList<>();
+                            HashMap<CalendarDay, Integer> history = new HashMap<>();
+
+                            DataHolder.getInstance().setTotalScore(0);
+                            datesArrayList.add(CalendarDay.today());
+                            history.put(CalendarDay.today(), 0);
+                            DataHolder.getInstance().setDailyScoreHashMap(history);
+                            DataHolder.getInstance().setCalendarDays(datesArrayList);
+                            openMainActivity();
                         }
                     } else {
                         Log.d(TAG, "get failed with ", task.getException());
@@ -186,6 +196,11 @@ public class SignInActivity extends AppCompatActivity {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("username", name);
         userMap.put("userid", userId);
-        db.collection("users").document(userId).set(userMap, SetOptions.merge());
+        db.collection("users").document(userId).set(userMap, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                updateNameAndScores();
+            }
+        });
     }
 }
