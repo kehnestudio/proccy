@@ -12,12 +12,14 @@ public class DailyScore {
     }
 
     public DailyScore(Timestamp date, int score) {
-        this.date = date    ;
+        this.date = date;
         this.score = score;
     }
+
     public Timestamp getDate() {
         return date;
     }
+
     public int getScore() {
         return score;
     }

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragments.Home">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/welcome_cardview"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="12dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imageView_profile_picture"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center"
+                app:civ_border_color="@color/purple_700"
+                app:civ_border_width="3dp" />
+
+            <TextView
+                android:id="@+id/textView_displayname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="10dp" />
+
+            <Button
+                android:id="@+id/button_sign_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/custom_button_1"
+                android:text="@string/home_fragment_sign_out"
+                app:backgroundTint="@null" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/score_display_cardview"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="12dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/welcome_cardview"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right|center"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/totalScoreDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="5dp"
+                android:text="@string/textview_score_total" />
+
+            <TextView
+                android:id="@+id/dailyScoreDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="5dp"
+                android:text="@string/textview_score_daily" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="222dp"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/score_display_cardview"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/sloth_resting"
+        app:lottie_scale="4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

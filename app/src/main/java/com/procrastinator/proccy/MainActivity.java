@@ -5,10 +5,12 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -22,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +38,20 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnNavigationItemSelectedListener(navListener);
         bottomNav.setOnNavigationItemReselectedListener(navReListener);
 
+        mToolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(mToolbar);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
                     new Home()).commit();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.top_app_bar, menu);
+        return true;
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
@@ -75,6 +88,8 @@ private BottomNavigationView.OnNavigationItemReselectedListener navReListener =
                 }
             }
         };
+
+
 
     @Override
     protected void onStart() {
