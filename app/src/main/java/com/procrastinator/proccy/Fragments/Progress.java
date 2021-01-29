@@ -76,6 +76,7 @@ public class Progress extends Fragment {
         displayDayTextView = getView().findViewById(R.id.textview_displayday);
         scoreDailyTextView = getView().findViewById(R.id.dailyScoreDisplay_progress);
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay_progress);
+
         calendarView = getView().findViewById(R.id.calendarView);
         calendarView.addDecorators(new CurrentDayDecorator(requireActivity()));
 
@@ -88,7 +89,6 @@ public class Progress extends Fragment {
         }
 
         setCurrentDailyAndTotalScore();
-
     }
 
     @Override

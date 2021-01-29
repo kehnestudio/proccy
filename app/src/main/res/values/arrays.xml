@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="questions_environment">
+        <item>@string/qe1</item>
+        <item>@string/qe2</item>
+        <item>@string/qe3</item>
+        <item>@string/qe4</item>
+    </string-array>
+
+    <string-array name="questions_tasks">
+        <item>@string/qt1</item>
+        <item>@string/qt2</item>
+        <item>@string/qt3</item>
+        <item>@string/qt4</item>
+    </string-array>
+</resources>
