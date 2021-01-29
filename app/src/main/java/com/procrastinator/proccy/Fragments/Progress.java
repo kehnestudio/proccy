@@ -1,5 +1,7 @@
 package com.procrastinator.proccy.Fragments;
 
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -40,6 +42,7 @@ public class Progress extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         //if (getArguments() != null) {
         //    mParam1 = getArguments().getInt(ARG_PARAM1);
         //    mParam2 = getArguments().getString(ARG_PARAM2);
@@ -73,6 +76,7 @@ public class Progress extends Fragment {
         displayDayTextView = getView().findViewById(R.id.textview_displayday);
         scoreDailyTextView = getView().findViewById(R.id.dailyScoreDisplay_progress);
         scoreTotalTextView = getView().findViewById(R.id.totalScoreDisplay_progress);
+
         calendarView = getView().findViewById(R.id.calendarView);
         calendarView.addDecorators(new CurrentDayDecorator(requireActivity()));
 
@@ -80,9 +84,20 @@ public class Progress extends Fragment {
             setSelectedDailyScore(date);
         });
 
-        addDecorator(DataHolder.getInstance().getCalendarDays());
-        setCurrentDailyAndTotalScore();
+        if(DataHolder.getInstance().getCalendarDays()!=null){
+            addDecorator(DataHolder.getInstance().getCalendarDays());
+        }
 
+        setCurrentDailyAndTotalScore();
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser) {
+            Activity a = getActivity();
+            if(a != null) a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 
     private void setCurrentDailyAndTotalScore(){
@@ -91,7 +106,7 @@ public class Progress extends Fragment {
         scoreTotalTextView.setText(getResources().getString(R.string.textview_score_total,scoreTotal));
         scoreDailyTextView.setText(getResources().getString(R.string.textview_score_daily, scoreDaily));
         progressTextView.setText(getResources().getString(R.string.progress_fragment_progresscircle_text,scoreDaily));
-        progress.setProgress(scoreDaily);
+        progress.setProgress(scoreDaily, true);
     }
 
     private void setSelectedDailyScore(CalendarDay date){

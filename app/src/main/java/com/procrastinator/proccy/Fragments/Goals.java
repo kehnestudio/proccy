@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -22,11 +23,6 @@ import androidx.fragment.app.Fragment;
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -39,7 +35,7 @@ import com.procrastinator.proccy.Utilities;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,11 +69,8 @@ public class Goals extends Fragment {
     private int mScoreDaily;
     private int mScoreTotal;
     private int mScoreTemporary;
-    int mScoreOffline1 = 5;
-    int mScoreOffline2 = 5;
-    int mScoreOffline3 = 5;
-    int mScoreOffline4 = 5;
     public Intent mServiceIntent;
+    public static LottieAnimationView animationView;
 
     public Goals() {
         // Required empty public constructor
@@ -95,6 +88,7 @@ public class Goals extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         //if (getArguments() != null) {
         //    mScoreTotal = getArguments().getInt(ARG_PARAM1);
         //    displayName = getArguments().getString(ARG_PARAM2);
@@ -173,20 +167,26 @@ public class Goals extends Fragment {
     };
 
     private void startTimer() {
+
+        int mScoreQuestionEnvironment1 = 5;
+        int mScoreQuestionEnvironment2 = 5;
+        int mScoreQuestionTask1 = 10;
+        int mScoreQuestionTask2 = 10;
+
         if (START_TIME_IN_MILLIS >= 3000) {
 
             mScoreTemporary = 10;
             if (mCheckbox1.isChecked()) {
-                mScoreTemporary += mScoreOffline1;
+                mScoreTemporary += mScoreQuestionEnvironment1;
             }
             if (mCheckbox2.isChecked()) {
-                mScoreTemporary += mScoreOffline2;
+                mScoreTemporary += mScoreQuestionEnvironment2;
             }
             if (mCheckbox3.isChecked()) {
-                mScoreTemporary += mScoreOffline3;
+                mScoreTemporary += mScoreQuestionTask1;
             }
             if (mCheckbox4.isChecked()) {
-                mScoreTemporary += mScoreOffline4;
+                mScoreTemporary += mScoreQuestionTask2;
             }
             PreferencesConfig.saveTempScore(requireActivity(), mScoreTemporary);
             startService();
@@ -232,7 +232,7 @@ public class Goals extends Fragment {
     }
 
     private void playAnimation() {
-        LottieAnimationView animationView = getView().findViewById(R.id.animationView_confetti);
+        animationView = getView().findViewById(R.id.animationView_confetti);
         animationView.setVisibility(View.VISIBLE);
         animationView.setRepeatCount(0);
         animationView.playAnimation();
@@ -258,6 +258,11 @@ public class Goals extends Fragment {
 
             }
         });
+    }
+
+    public static void stopAnimation(){
+        animationView.setVisibility(View.INVISIBLE);
+        animationView.setProgress(0);
     }
 
     private void updateScore() {
@@ -354,54 +359,19 @@ public class Goals extends Fragment {
     }
 
     public void changeCheckBox() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("questions");
-        mTimerRunning = PreferencesConfig.loadTimerRunning(requireActivity());
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                String languageCode = Locale.getDefault().getLanguage();
-                long childrenCount = snapshot.getChildrenCount();
-                int max = (int) childrenCount;
+        String[] questionsEnvironment = getResources().getStringArray(R.array.questions_environment);
+        String[] questionsTasks = getResources().getStringArray(R.array.questions_tasks);
+        List<String> questionsEnvironmentList = Arrays.asList(questionsEnvironment);
+        List<String> questionsTaskList = Arrays.asList(questionsTasks);
+        Collections.shuffle(questionsEnvironmentList);
+        Collections.shuffle(questionsTaskList);
 
-                final List<Integer> l = new ArrayList<>();
-                for (int j = 0; j < max; j++) {
-                    l.add(j);
-                }
+        mCheckbox1.setText(questionsEnvironmentList.get(0));
+        mCheckbox2.setText(questionsEnvironmentList.get(1));
+        mCheckbox3.setText(questionsTaskList.get(0));
+        mCheckbox4.setText(questionsTaskList.get(1));
 
-                Collections.shuffle(l);
-
-                String count1 = Integer.toString(l.get(0));
-                String count2 = Integer.toString(l.get(1));
-                String count3 = Integer.toString(l.get(2));
-                String count4 = Integer.toString(l.get(3));
-
-                if (!mTimerRunning && snapshot.exists()) {
-
-                    String check1 = snapshot.child(count1).child(languageCode).getValue(String.class);
-                    String check2 = snapshot.child(count2).child(languageCode).getValue(String.class);
-                    String check3 = snapshot.child(count3).child(languageCode).getValue(String.class);
-                    String check4 = snapshot.child(count4).child(languageCode).getValue(String.class);
-
-                    mScoreOffline1 = Integer.parseInt(String.valueOf(snapshot.child(count1).child("score").getValue()));
-                    mScoreOffline2 = Integer.parseInt(String.valueOf(snapshot.child(count2).child("score").getValue()));
-                    mScoreOffline3 = Integer.parseInt(String.valueOf(snapshot.child(count3).child("score").getValue()));
-                    mScoreOffline4 = Integer.parseInt(String.valueOf(snapshot.child(count4).child("score").getValue()));
-
-                    mCheckbox1.setText(check1);
-                    mCheckbox2.setText(check2);
-                    mCheckbox3.setText(check3);
-                    mCheckbox4.setText(check4);
-
-                } else {
-                    Log.d(TAG, "ChangeCheckBox /  onDataChange: doesn't exist");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
     }
 
     public void startService() {

@@ -2,6 +2,7 @@ package com.procrastinator.proccy.Fragments;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +55,7 @@ public class Home extends Fragment implements SharedPreferences.OnSharedPreferen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         //if (getArguments() != null) {
         //    scoreTotal = getArguments().getInt(ARG_PARAM1);
         //    displayName = getArguments().getString(ARG_PARAM2);

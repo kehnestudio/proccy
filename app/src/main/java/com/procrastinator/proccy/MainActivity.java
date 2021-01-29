@@ -5,13 +5,16 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.procrastinator.proccy.Fragments.Goals;
+import com.procrastinator.proccy.Fragments.Home;
+import com.procrastinator.proccy.Fragments.Progress;
 
 import java.util.Calendar;
 
@@ -19,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
 
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
-
-    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,25 +31,50 @@ public class MainActivity extends AppCompatActivity {
 
         onNewIntent(getIntent());
         scheduleDailyScoreReset();
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        bottomNav.setOnNavigationItemSelectedListener(navListener);
+        bottomNav.setOnNavigationItemReselectedListener(navReListener);
 
         if (savedInstanceState == null) {
-            setUpNavigation();
+            getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
+                    new Home()).commit();
         }
     }
 
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        setUpNavigation();
-    }
+    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    Fragment selectedFragment = null;
+                    switch (item.getItemId()) {
+                        case  R.id.fragment_home:
+                            selectedFragment = new Home();
+                            break;
+                        case R.id.fragment_goals:
+                            selectedFragment = new Goals();
+                            break;
+                        case R.id.fragment_progress:
+                            selectedFragment = new Progress();
+                            break;
+                    }
+                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment,
+                            selectedFragment).commit();
+                    return true;
+                }
+            };
 
-    public void setUpNavigation(){
-        bottomNavigationView =findViewById(R.id.bottom_navigation);
-        NavHostFragment navHostFragment = (NavHostFragment)getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment_container);
-        NavigationUI.setupWithNavController(bottomNavigationView,
-                navHostFragment.getNavController());
-    }
+private BottomNavigationView.OnNavigationItemReselectedListener navReListener =
+        new BottomNavigationView.OnNavigationItemReselectedListener() {
+            @Override
+            public void onNavigationItemReselected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.fragment_home:
+                    case R.id.fragment_goals:
+                    case R.id.fragment_progress:
+                        break;
+                }
+            }
+        };
 
     @Override
     protected void onStart() {

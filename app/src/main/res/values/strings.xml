@@ -4,10 +4,6 @@
     <string name="goals_fragment_start_timer">start</string>
     <string name="goals_fragment_reset_timer">reset</string>
     <string name="goals_fragment_initial_time">5 minute timer</string>
-    <string name="goals_fragment_question_1">Lying down or sitting in a comfortable position?</string>
-    <string name="goals_fragment_question_2">Listening to music?</string>
-    <string name="goals_fragment_question_3">Is it quiet?</string>
-    <string name="goals_fragment_question_4">Drinking coffee or tea?</string>
     <string name="goals_fragment_minute_timer">"%1$d minute timer"</string>
     <string name="progress_fragment_reset_dailyscore">reset</string>
     <string name="progress_fragment_progresscircle_text" translatable="false">%1$d %%</string>
@@ -22,5 +18,14 @@
     <string name="bottom_navigation_overview_button">Overview</string>
     <string name="progress_fragment_display_date">Today</string>
 
+    <string name="qe1">In a quiet place?</string>
+    <string name="qe2">Are you outside?</string>
+    <string name="qe3">Able to see nature?</string>
+    <string name="qe4">In a place without people?</string>
+
+    <string name="qt1">Lying down?</string>
+    <string name="qt2">Listening to music?</string>
+    <string name="qt3">Got a blanket?</string>
+    <string name="qt4">Drinking coffee or tea?</string>
 
 </resources>

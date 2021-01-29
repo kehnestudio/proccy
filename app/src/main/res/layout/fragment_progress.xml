@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.Progress">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView_score_overview"
@@ -12,9 +17,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
         app:cardCornerRadius="24dp"
-        app:cardElevation="80dp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="12dp">
+        app:cardElevation="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,9 +53,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:padding="30dp"
         app:cardCornerRadius="24dp"
-        app:cardElevation="80dp"
+        app:cardElevation="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView_score_overview">
@@ -109,18 +114,16 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView_calendar"
-        android:layout_width="392dp"
-        android:layout_height="367dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:padding="30dp"
         app:cardCornerRadius="24dp"
-        app:cardElevation="80dp"
-
+        app:cardElevation="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView_progress_circle">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -130,11 +133,11 @@
                 android:id="@+id/calendarView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:mcv_selectionColor="@color/purple_700"
-                />
+                app:mcv_selectionColor="@color/purple_700" />
 
-        </LinearLayout>
+        </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
