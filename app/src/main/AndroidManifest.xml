@@ -14,27 +14,27 @@
         android:theme="@style/Theme.Proccy">
         <activity
             android:name=".SignInActivity"
-            android:noHistory="true"></activity>
+            android:noHistory="true"
+            android:launchMode="singleTask"
+            android:clearTaskOnLaunch="true"></activity>
         <activity
             android:name=".SplashScreenActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashStyle">
+            android:theme="@style/SplashStyle"
+            android:launchMode="singleInstance"
+            android:clearTaskOnLaunch="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ProgressActivity"></activity>
-        <activity
-            android:name=".GoalsActivity"
-            android:label="My goals"
-            android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity"></activity>
+
         <activity android:name=".MainActivity"
-            android:noHistory="true"></activity>
+            android:noHistory="true"
+            android:launchMode="singleTask"
+            android:clearTaskOnLaunch="true"></activity>
 
         <receiver
             android:name=".Receiver"

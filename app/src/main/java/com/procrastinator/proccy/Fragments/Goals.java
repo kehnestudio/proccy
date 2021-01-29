@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -78,6 +79,7 @@ public class Goals extends Fragment {
     int mScoreOffline3 = 5;
     int mScoreOffline4 = 5;
     public Intent mServiceIntent;
+    public static LottieAnimationView animationView;
 
     public Goals() {
         // Required empty public constructor
@@ -95,6 +97,7 @@ public class Goals extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         //if (getArguments() != null) {
         //    mScoreTotal = getArguments().getInt(ARG_PARAM1);
         //    displayName = getArguments().getString(ARG_PARAM2);
@@ -232,7 +235,7 @@ public class Goals extends Fragment {
     }
 
     private void playAnimation() {
-        LottieAnimationView animationView = getView().findViewById(R.id.animationView_confetti);
+        animationView = getView().findViewById(R.id.animationView_confetti);
         animationView.setVisibility(View.VISIBLE);
         animationView.setRepeatCount(0);
         animationView.playAnimation();
@@ -258,6 +261,11 @@ public class Goals extends Fragment {
 
             }
         });
+    }
+
+    public static void stopAnimation(){
+        animationView.setVisibility(View.INVISIBLE);
+        animationView.setProgress(0);
     }
 
     private void updateScore() {
