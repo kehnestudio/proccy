@@ -1,6 +1,5 @@
 package com.procrastinator.proccy.Fragments;
 
-import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -89,15 +88,6 @@ public class Progress extends Fragment {
         }
 
         setCurrentDailyAndTotalScore();
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if(isVisibleToUser) {
-            Activity a = getActivity();
-            if(a != null) a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
     }
 
     private void setCurrentDailyAndTotalScore(){

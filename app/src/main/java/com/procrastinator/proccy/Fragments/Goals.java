@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,6 +19,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.slider.Slider;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -64,8 +64,8 @@ public class Goals extends Fragment {
     //TIMER TEXTVIEW UND BUTTONS
     private TextView mTextViewCountDown;
     private Button mButtonStartPause, mButtonReset, mButtonRefresh;
-    private SeekBar mSeekBarTimer;
-    private CheckBox mCheckbox1, mCheckbox2, mCheckbox3, mCheckbox4;
+    private Slider mSlider;
+    private MaterialCheckBox mCheckbox1, mCheckbox2, mCheckbox3, mCheckbox4;
     private int mScoreDaily;
     private int mScoreTotal;
     private int mScoreTemporary;
@@ -115,31 +115,15 @@ public class Goals extends Fragment {
         mCheckbox2 = getView().findViewById(R.id.checkBox2);
         mCheckbox3 = getView().findViewById(R.id.checkBox3);
         mCheckbox4 = getView().findViewById(R.id.checkBox4);
-        mSeekBarTimer = getView().findViewById(R.id.seekBar_timer);
+        mSlider = getView().findViewById(R.id.seekBar_timer);
 
         mButtonRefresh.setOnClickListener(v -> changeCheckBox());
-
         mButtonStartPause.setOnClickListener(v -> startTimer());
-
         mButtonReset.setOnClickListener(v -> resetTimer());
-
-        mSeekBarTimer.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                START_TIME_IN_MILLIS = progress * 60000;
-                mTimeLeftInMillis = START_TIME_IN_MILLIS;
-                updateCountDownText();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+        mSlider.addOnChangeListener((slider, value, fromUser) -> {
+            START_TIME_IN_MILLIS = (int) value * 60000;
+            mTimeLeftInMillis = START_TIME_IN_MILLIS;
+            updateCountDownText();
         });
 
     }
@@ -211,7 +195,10 @@ public class Goals extends Fragment {
 
         mTimerRunning = PreferencesConfig.loadTimerRunning(requireActivity());
         hasFinished = PreferencesConfig.loadTimerHasFinished(requireActivity());
-        mTimeLeftInMillis = PreferencesConfig.loadMilliesLeft(requireActivity());
+
+        if(mTimerRunning){
+            mTimeLeftInMillis = PreferencesConfig.loadMilliesLeft(requireActivity());
+        }
 
         if (hasFinished) {
             playAnimation();
@@ -260,7 +247,7 @@ public class Goals extends Fragment {
         });
     }
 
-    public static void stopAnimation(){
+    public static void stopAnimation() {
         animationView.setVisibility(View.INVISIBLE);
         animationView.setProgress(0);
     }
@@ -303,7 +290,7 @@ public class Goals extends Fragment {
             mCheckbox3.setEnabled(false);
             mCheckbox4.setEnabled(false);
             mButtonRefresh.setVisibility(View.INVISIBLE);
-            mSeekBarTimer.setVisibility(View.INVISIBLE);
+            mSlider.setVisibility(View.INVISIBLE);
             mButtonStartPause.setVisibility(View.INVISIBLE);
             mButtonReset.setVisibility(View.VISIBLE);
 
@@ -315,7 +302,7 @@ public class Goals extends Fragment {
                 mCheckbox2.setEnabled(true);
                 mCheckbox3.setEnabled(true);
                 mCheckbox4.setEnabled(true);
-                mSeekBarTimer.setVisibility(View.VISIBLE);
+                mSlider.setVisibility(View.VISIBLE);
                 mButtonStartPause.setVisibility(View.VISIBLE);
                 mButtonRefresh.setVisibility(View.VISIBLE);
 

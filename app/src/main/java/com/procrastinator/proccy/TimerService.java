@@ -19,10 +19,9 @@ import static com.procrastinator.proccy.Receiver.UPDATE_COUNTDOWN_TEXT;
 
 public class TimerService extends Service {
 
-    private long START_TIME_IN_MILLIS = 3000; //TEST VALUE
     private CountDownTimer mCountDownTimer;
     private boolean mTimerRunning;
-    private long mTimeLeftInMillis = START_TIME_IN_MILLIS;
+    private long mTimeLeftInMillis;
 
     public static final String TIME_LEFT_IN_MILLIS = "com.procrastinator.TIME_LEFT_IN_MILLIS";
     public static final String TIMER_RUNNING = "com.procrastinator.TIMER_RUNNING";
@@ -31,7 +30,7 @@ public class TimerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mTimeLeftInMillis = intent.getLongExtra("inputExtra", 3000);
+        mTimeLeftInMillis = intent.getLongExtra("inputExtra", 300000);
         mTimerRunning = PreferencesConfig.loadTimerRunning(this);
 
         title = getString(R.string.timer_service_notification_title);

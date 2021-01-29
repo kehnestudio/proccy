@@ -12,7 +12,7 @@
     <string name="timer_service_notification_message_2">Nur noch weniger als eine Minute</string>
     <string name="home_fragment_displayname">Willkommen, %1$s</string>
     <string name="home_fragment_sign_out">Abmelden</string>
-    <string name="bottom_navigation_home_button">Home</string>
+    <string name="bottom_navigation_home_button">Start</string>
     <string name="bottom_navigation_goals_button">Proccy</string>
     <string name="bottom_navigation_overview_button">Übersicht</string>
     <string name="progress_fragment_display_date">Heute</string>
